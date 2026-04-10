@@ -5,7 +5,7 @@ module "speech_to_text_lambda_function"  {
   lambda_function_name = "speech_to_text"
   lambda_handler       = "index.handler"
   lambda_source_file   = "${path.module}/../lambda/index1.py"
-  lambda_zip_file      = "${path.module}/../lambda/function.zip"
+  lambda_zip_file      = "${path.module}/../lambda/zip/function1.zip"
   environment          = var.environment
   application_name     = var.application_name
 }
@@ -17,7 +17,7 @@ module "response_lambda_function"  {
   lambda_function_name = "response"
   lambda_handler       = "index.handler"
   lambda_source_file   = "${path.module}/../lambda/index2.py"
-  lambda_zip_file      = "${path.module}/../lambda/function.zip"
+  lambda_zip_file      = "${path.module}/../lambda/zip/function2.zip"
   environment          = var.environment
   application_name     = var.application_name
 }

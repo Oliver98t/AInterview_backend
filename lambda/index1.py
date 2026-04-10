@@ -3,6 +3,7 @@ import os
 
 def handler(event, context):
     # Get environment variables
+    print(event)
     environment = os.environ.get('ENVIRONMENT', 'unknown')
     
     # Build response
