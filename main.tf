@@ -1,13 +1,23 @@
-module "lambda_app" {
+module "speech_to_text_lambda_function"  {
   source = "./modules/lambda"
 
   aws_region           = var.aws_region
-  lambda_function_name = var.lambda_function_name
-  lambda_role_name     = var.lambda_role_name
-  lambda_runtime       = var.lambda_runtime
-  lambda_handler       = var.lambda_handler
-  lambda_source_file   = var.lambda_source_file
+  lambda_function_name = "speech_to_text"
+  lambda_handler       = "index.handler"
+  lambda_source_file   = "${path.module}/lambda/index.py"
+  lambda_zip_file      = "${path.module}/lambda/function.zip"
   environment          = var.environment
-  log_level            = var.log_level
+  application_name     = var.application_name
+}
+
+module "response_lambda_function"  {
+  source = "./modules/lambda"
+
+  aws_region           = var.aws_region
+  lambda_function_name = "response"
+  lambda_handler       = "index.handler"
+  lambda_source_file   = "${path.module}/lambda/index.py"
+  lambda_zip_file      = "${path.module}/lambda/function.zip"
+  environment          = var.environment
   application_name     = var.application_name
 }

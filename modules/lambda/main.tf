@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "example" {
-    name               = var.lambda_role_name
+    name               = "${var.lambda_function_name}_execution_role"
     assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -29,14 +29,14 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
 # Package the Lambda function code
 data "archive_file" "example" {
     type        = "zip"
-    source_file = "${path.module}/${var.lambda_source_file}"
-    output_path = "${path.module}/lambda/function.zip"
+    source_file = "${var.lambda_source_file}"
+    output_path = "${var.lambda_zip_file}"
 }
 
 # Lambda function
 resource "aws_lambda_function" "example" {
     filename         = data.archive_file.example.output_path
-    function_name    = var.lambda_function_name
+    function_name    = "${var.lambda_function_name}_${var.environment}"
     role             = aws_iam_role.example.arn
     handler          = var.lambda_handler
     source_code_hash = data.archive_file.example.output_base64sha256

@@ -7,13 +7,6 @@ variable "aws_region" {
 variable "lambda_function_name" {
     description = "Name of the Lambda function"
     type        = string
-    default     = "speech_to_text"
-}
-
-variable "lambda_role_name" {
-    description = "Name of the IAM role for Lambda execution"
-    type        = string
-    default     = "lambda_execution_role"
 }
 
 variable "lambda_runtime" {
@@ -32,6 +25,12 @@ variable "lambda_source_file" {
     description = "Path to the Lambda source code file"
     type        = string
     default     = "lambda/index.py"
+}
+
+variable "lambda_zip_file" {
+	description = "Path to the Lambda ZIP file"
+	type        = string
+	default     = "lambda/function.zip"
 }
 
 variable "environment" {
