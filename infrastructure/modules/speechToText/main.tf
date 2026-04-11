@@ -32,7 +32,7 @@ data "archive_file" "lambda_func_file" {
     source_file = "${var.lambda_source_file}"
     output_path = "${var.lambda_zip_file}"
 }
-
+    
 # Lambda function
 resource "aws_lambda_function" "lambda_func" {
     filename         = data.archive_file.lambda_func_file.output_path
@@ -59,7 +59,7 @@ resource "aws_lambda_function" "lambda_func" {
 # Lambda Function URL (provides HTTP endpoint)
 resource "aws_lambda_function_url" "lambda_func_url" {
     function_name      = aws_lambda_function.lambda_func.function_name
-    authorization_type = "NONE"
+    authorization_type = "AWS_IAM"
 
     cors {
         allow_credentials = false
@@ -68,21 +68,4 @@ resource "aws_lambda_function_url" "lambda_func_url" {
         allow_headers     = ["*"]
         max_age           = 86400
     }
-}
-
-# Permission for public Function URL access
-resource "aws_lambda_permission" "function_url" {
-    statement_id           = "FunctionURLAllowPublicAccess"
-    action                 = "lambda:InvokeFunctionUrl"
-    function_name          = aws_lambda_function.lambda_func.function_name
-    principal              = "*"
-    function_url_auth_type = "NONE"
-}
-
-resource "aws_lambda_permission" "function_url_invoke" {
-    statement_id              = "FunctionURLAllowInvokeFunction"
-    action                    = "lambda:InvokeFunction"
-    function_name             = aws_lambda_function.lambda_func.function_name
-    principal                 = "*"
-    
 }
