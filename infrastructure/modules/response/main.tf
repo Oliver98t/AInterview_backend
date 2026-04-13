@@ -2,6 +2,8 @@ provider "aws" {
     region = var.aws_region
 }
 
+data "aws_caller_identity" "current" {}
+
 # IAM role for Lambda execution
 data "aws_iam_policy_document" "assume_role" {
     statement {
@@ -43,6 +45,27 @@ resource "aws_iam_role_policy" "lambda_sqs_consume_access" {
     name   = "${var.lambda_function_name}_${var.environment}_sqs_consume_access"
     role   = aws_iam_role.lambda_func_iam_role.id
     policy = data.aws_iam_policy_document.lambda_sqs_consume_access.json
+}
+
+data "aws_iam_policy_document" "lambda_bedrock_access" {
+    statement {
+        effect = "Allow"
+        actions = [
+            "bedrock:InvokeModel",
+            "bedrock:InvokeModelWithResponseStream"
+        ]
+        resources = [
+            "arn:aws:bedrock:${var.aws_region}:${data.aws_caller_identity.current.account_id}:inference-profile/global.amazon.nova-2-lite-v1:0",
+            "arn:aws:bedrock:${var.aws_region}::foundation-model/amazon.nova-2-lite-v1:0",
+            "arn:aws:bedrock:::foundation-model/amazon.nova-2-lite-v1:0"
+        ]
+    }
+}
+
+resource "aws_iam_role_policy" "lambda_bedrock_access" {
+    name   = "${var.lambda_function_name}_${var.environment}_bedrock_access"
+    role   = aws_iam_role.lambda_func_iam_role.id
+    policy = data.aws_iam_policy_document.lambda_bedrock_access.json
 }
 
 # Build the Lambda package directory with Python dependencies.
