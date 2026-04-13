@@ -10,6 +10,16 @@ module "speech_to_text_lambda_function"  {
   lambda_zip_file           = "${path.module}/../lambda/speechToText/build/zip/package.zip"
   environment               = var.environment
   application_name          = var.application_name
+  queue_url                 = module.lambda_queue.queue_url
+  queue_arn                 = module.lambda_queue.queue_arn
+}
+
+module "lambda_queue"  {
+  source = "./modules/queue"
+
+  aws_region                = var.aws_region
+  environment               = var.environment
+  application_name          = var.application_name
 }
 
 module "response_lambda_function"  {

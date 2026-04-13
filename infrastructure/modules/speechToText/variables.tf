@@ -60,3 +60,13 @@ variable "application_name" {
     description = "Name of the application"
     type        = string
 }
+
+variable "queue_url" {
+    description = "URL of the SQS queue used for downstream processing"
+    type        = string
+}
+
+variable "queue_arn" {
+    description = "ARN of the SQS queue used for downstream processing"
+    type        = string
+}

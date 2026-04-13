@@ -1,4 +1,3 @@
-# TODO create modules for each lambda function
 # TODO connect lambda functions via queue
 # TODO create a way to test each lambda function locally
 # TODO create a folder structure for each lambda 
@@ -22,15 +21,13 @@ def handler(event: dict, context):
         print(f"USER: {user}")
         transcribe = Transcribe(bucket=os.environ['S3_BUCKET'], user="test")
         transcription = transcribe.transcribe()
-    '''
-        queue_url = os.environ['SQSQUEUE1_QUEUE_URL']
-
+        queue_url = os.environ['SQS_QUEUE_URL']
         sqs.send_message(
             QueueUrl=queue_url,
             MessageBody=json.dumps({
                 "user": user,
                 "transcription": transcription}))
-    '''
+
     return {
         'statusCode': 200,
         'body': json.dumps(f"Message: {transcription}")

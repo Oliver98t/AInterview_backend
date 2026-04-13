@@ -142,6 +142,22 @@ resource "aws_iam_role_policy" "lambda_transcribe_access" {
     policy = data.aws_iam_policy_document.lambda_transcribe_access.json
 }
 
+data "aws_iam_policy_document" "lambda_sqs_access" {
+    statement {
+        effect = "Allow"
+        actions = [
+            "sqs:SendMessage"
+        ]
+        resources = [var.queue_arn]
+    }
+}
+
+resource "aws_iam_role_policy" "lambda_sqs_access" {
+    name   = "${var.lambda_function_name}_${var.environment}_sqs_access"
+    role   = aws_iam_role.lambda_func_iam_role.id
+    policy = data.aws_iam_policy_document.lambda_sqs_access.json
+}
+
 # Build the Lambda package directory with Python dependencies.
 resource "null_resource" "lambda_build" {
     triggers = {
@@ -184,6 +200,7 @@ resource "aws_lambda_function" "lambda_func" {
             ENVIRONMENT = var.environment
             LOG_LEVEL   = var.log_level
             S3_BUCKET   = aws_s3_bucket.lambda_bucket.bucket
+            SQS_QUEUE_URL = var.queue_url
         }
     }
 
