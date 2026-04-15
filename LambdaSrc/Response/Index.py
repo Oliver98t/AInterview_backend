@@ -8,7 +8,6 @@ from mypy_boto3_bedrock_runtime import BedrockRuntimeClient
 # create the DynamoDB resource
 dynamo = boto3.client('dynamodb')
 LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
-TABLENAME = os.environ['TABLE_NAME']
 
 def handler(event, context):
     print(f"Event: {event}")
@@ -22,6 +21,7 @@ def handler(event, context):
     response = generate_response(transcript)
 
     if LOCAL_TEST != None:
+        TABLENAME = os.environ['TABLE_NAME']
         dynamo.put_item(
             TableName=TABLENAME,
             Item={
