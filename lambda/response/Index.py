@@ -11,6 +11,7 @@ LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
 TABLENAME = os.environ['TABLE_NAME']
 
 def handler(event, context):
+    print(f"Event: {event}")
     # get the message out of the SQS event
     message = event['Records'][0]['body']
     data: dict = json.loads(message)

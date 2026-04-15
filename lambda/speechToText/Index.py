@@ -13,6 +13,7 @@ s3 = boto3.client('s3')
 sqs: SQSClient = boto3.client('sqs')
 
 def handler(event: dict, context):
+    print(f"Event: {event}")
     query_parameters: dict = event.get('queryStringParameters')
     user = query_parameters.get("user")
     transcription = None
