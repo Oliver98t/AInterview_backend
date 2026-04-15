@@ -1,13 +1,13 @@
 module "speech_to_text_lambda_function"  {
-  source = "./modules/speechToText"
+  source = "./modules/SpeechToText"
 
   aws_region                = var.aws_region
-  lambda_function_name      = "speech_to_text"
+  lambda_function_name      = "SpeechToText"
   lambda_handler            = "Index.handler"
-  lambda_source_file        = "${path.module}/../lambda/speechToText/Index.py"
-  lambda_requirements_file  = "${path.module}/../lambda/speechToText/requirements.txt"
-  lambda_build_dir          = "${path.module}/../lambda/speechToText/build"
-  lambda_zip_file           = "${path.module}/../lambda/speechToText/build/zip/package.zip"
+  lambda_source_file        = "${path.module}/../LambdaSrc/SpeechToText/Index.py"
+  lambda_requirements_file  = "${path.module}/../LambdaSrc/SpeechToText/requirements.txt"
+  lambda_build_dir          = "${path.module}/../LambdaSrc/SpeechToText/build"
+  lambda_zip_file           = "${path.module}/../LambdaSrc/SpeechToText/build/zip/package.zip"
   environment               = var.environment
   application_name          = var.application_name
   queue_url                 = module.lambda_queue.queue_url
@@ -15,7 +15,7 @@ module "speech_to_text_lambda_function"  {
 }
 
 module "lambda_queue"  {
-  source = "./modules/queue"
+  source = "./modules/Queue"
 
   aws_region                = var.aws_region
   environment               = var.environment
@@ -23,15 +23,15 @@ module "lambda_queue"  {
 }
 
 module "response_lambda_function"  {
-  source = "./modules/response"
+  source = "./modules/Response"
 
   aws_region                = var.aws_region
-  lambda_function_name      = "response"
+  lambda_function_name      = "Response"
   lambda_handler            = "Index.handler"
-  lambda_source_file        = "${path.module}/../lambda/response/Index.py"
-  lambda_requirements_file  = "${path.module}/../lambda/response/requirements.txt"
-  lambda_build_dir          = "${path.module}/../lambda/response/build"
-  lambda_zip_file           = "${path.module}/../lambda/response/build/zip/package.zip"
+  lambda_source_file        = "${path.module}/../LambdaSrc/Response/Index.py"
+  lambda_requirements_file  = "${path.module}/../LambdaSrc/Response/requirements.txt"
+  lambda_build_dir          = "${path.module}/../LambdaSrc/Response/build"
+  lambda_zip_file           = "${path.module}/../LambdaSrc/Response/build/zip/package.zip"
   environment               = var.environment
   application_name          = var.application_name
   queue_arn                 = module.lambda_queue.queue_arn
