@@ -6,9 +6,11 @@ WORKDIR /app
 
 # Install the specified packages
 RUN pip install -r LambdaSrc/DevEnvRequirements.txt
- 
-# Install git for version control
+
+# set up git for version control
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+RUN git config --global user.name "Oliver98t"
+RUN git config --global user.email "oli1998t@gmail.com"
 
 # set up terraform
 RUN apt-get update && apt-get install -y wget unzip \

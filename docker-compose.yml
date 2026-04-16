@@ -1,5 +1,5 @@
 services:
-  dev:
+  dev-container:
     platform: linux/amd64
     build:
       context: .
