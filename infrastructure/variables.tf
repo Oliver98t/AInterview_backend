@@ -1,13 +1,13 @@
-variable "aws_region" {
-	description = "AWS region where resources will be created"
-	type        = string
-	default     = "eu-west-2"
-}
-
 variable "application_name" {
 	description = "Name of the application"
 	type        = string
 	default     = "AInterview"
+}
+
+variable "aws_region" {
+	description = "AWS region where resources will be created"
+	type        = string
+
 }
 
 variable "environment" {
