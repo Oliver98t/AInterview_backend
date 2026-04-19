@@ -11,6 +11,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+
+            - name: Print environment (no secrets)
+              run: env | sort
+              
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
               with:
