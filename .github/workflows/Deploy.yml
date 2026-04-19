@@ -1,4 +1,4 @@
-name: Unit tests
+name: Deploy
 
 on:
     workflow_call:
@@ -6,7 +6,7 @@ on:
         branches: [ "*" ]
 
 jobs:
-    unit-test:
+    Deployment:
         runs-on: ubuntu-latest
         strategy:
             matrix:
@@ -33,3 +33,6 @@ jobs:
 
             - name: Run unit tests
               run: pytest
+
+            - name: Deploy containers
+              run: source DeployContainers.sh
