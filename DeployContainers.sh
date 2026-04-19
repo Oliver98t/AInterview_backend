@@ -24,6 +24,3 @@ docker build -t $speechtotext_tag LambdaSrc/SpeechToText/
 speechtotext_image_uri=$registry_url/$speechtotext_tag
 docker tag $speechtotext_tag $speechtotext_image_uri
 docker push $registry_url/$speechtotext_tag
-
-cd infrastructure
-terraform apply -var="environment=$env" -var="Response_image_uri=$response_image_uri" -var="SpeechToText_image_uri=$speechtotext_image_uri"

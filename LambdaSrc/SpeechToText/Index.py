@@ -1,4 +1,6 @@
-# TODO create simple pipeline 
+# TODO create simple pipeline
+# TODO create specific IAM user for testing credentials
+# TODO create dev deployment  
 
 import json
 import boto3
