@@ -45,5 +45,5 @@ jobs:
             - name: Integration test
               run: pytest LambdaSrc/IntegrationTest/
             
-            - name: Deploy dev environment
+            - name: Deploy prod environment
               run: source Deploy.sh prod
