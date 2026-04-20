@@ -174,6 +174,7 @@ resource "aws_iam_role_policy" "lambda_sqs_access" {
 
 resource "aws_ecr_repository" "ECR" {
   name = "${lower(var.lambda_function_name)}-${var.environment}"
+    force_delete = true
 }
     
 # Lambda function

@@ -37,8 +37,8 @@ jobs:
               uses: hashicorp/setup-terraform@v3
 
             - name: Terraform Init
-              run: terraform init -backend-config=backend.config
+              run: terraform init -backend-config=backend.confi
               working-directory: ./infrastructure
 
             - name: Deploy containers
-              run: source Deploy.sh
+              run: source Deploy.sh dev
