@@ -1,38 +1,36 @@
-# TODO create simple pipeline
-# TODO create specific IAM user for testing credentials
-# TODO create dev deployment  
-
 import json
 import boto3
 import os
 from mypy_boto3_sqs import SQSClient
 import uuid
 
+# set up boto3 sdk
 transcribe = boto3.client('transcribe')
 s3 = boto3.client('s3')
 sqs: SQSClient = boto3.client('sqs')
+
+# set up env variables
+LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
+S3_BUCKET = os.environ.get('S3_BUCKET', None)
 
 def handler(event: dict, context):
     print(f"Event: {event}")
     query_parameters: dict = event.get('queryStringParameters')
     user = query_parameters.get("user")
-    transcription = None
-    status = "FAIL"
-    if user:
-        status = "SUCCESS"
-        print(f"USER: {user}")
-        transcribe = Transcribe(bucket=os.environ['S3_BUCKET'], user="test")
-        transcription = transcribe.transcribe()
+    transcribe = Transcribe(bucket=S3_BUCKET, user=user)
+    transcription = transcribe.transcribe()
+
+    if LOCAL_TEST != None:
         queue_url = os.environ['SQS_QUEUE_URL']
         sqs.send_message(
             QueueUrl=queue_url,
             MessageBody=json.dumps({
                 "user": user,
                 "transcription": transcription}))
-
+        
     return {
         'statusCode': 200,
-        'body': json.dumps(f"Message: {transcription}")
+        'body': json.dumps(f"transcription: {transcription}")
     }
 
 class Transcribe:

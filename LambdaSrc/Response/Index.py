@@ -14,7 +14,6 @@ def handler(event, context):
     # get the message out of the SQS event
     message = event['Records'][0]['body']
     data: dict = json.loads(message)
-    print(data)
     # write event data to DDB table
     user = data.get('user')
     transcript = data.get('transcription')
@@ -32,8 +31,7 @@ def handler(event, context):
             }
         )
     else:
-        print(f"{user}: {transcript}")
-        print(f"AI: {response}")
+        return { "response": response }
 
 def generate_response(prompt: str):
     client: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")  
