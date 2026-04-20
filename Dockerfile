@@ -6,6 +6,10 @@ WORKDIR /app
 
 RUN useradd -ms /bin/bash oli98
 
+# import ca certificates
+COPY ZscalerRootCertificate-2048-SHA256.crt /usr/local/share/ca-certificates/ZscalerRootCertificate-2048-SHA256.crt
+RUN update-ca-certificates
+
 # Install the specified packages
 RUN pip install -r LambdaSrc/DevEnvRequirements.txt
 

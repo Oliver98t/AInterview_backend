@@ -2,6 +2,7 @@
 **/.terraform/*
 
 .venv
+*.crt
 
 # .tfstate files
 *.tfstate
