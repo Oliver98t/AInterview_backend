@@ -13,7 +13,6 @@ logger.setLevel(logging.INFO)
 dynamo = boto3.client('dynamodb')
 LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
 
-
 def handler(event, context):
     logger.info(f"Event: {event}")
     # get the message out of the SQS event
