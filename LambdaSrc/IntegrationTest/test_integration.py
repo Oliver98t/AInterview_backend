@@ -4,7 +4,6 @@ from requests_aws4auth import AWS4Auth
 
 import subprocess
 
-
 def get_lambda_function_url(function_name: str, region: str = "eu-west-2") -> str:
     result = subprocess.run(
         [
