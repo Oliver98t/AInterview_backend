@@ -2,6 +2,11 @@ provider "aws" {
     region = var.aws_region
 }
 
+locals {
+    test_flac_path = "${path.module}/fixtures/test.flac"
+    lambda_function_name = "${var.lambda_function_name}_${var.environment}"
+}
+
 # IAM role for Lambda execution
 data "aws_iam_policy_document" "assume_role" {
     statement {
@@ -34,10 +39,6 @@ resource "aws_s3_bucket" "lambda_bucket" {
         Environment = var.environment
         Application = var.application_name
     }
-}
-
-locals {
-    test_flac_path = "${path.module}/fixtures/test.flac"
 }
 
 resource "aws_s3_object" "test_flac" {
@@ -173,13 +174,13 @@ resource "aws_iam_role_policy" "lambda_sqs_access" {
 }
 
 resource "aws_ecr_repository" "ECR" {
-  name = "${lower(var.lambda_function_name)}-${var.environment}"
+    name = local.lambda_function_name
     force_delete = true
 }
 
 # Lambda function
 resource "aws_lambda_function" "lambda_func" {
-    function_name    = "${var.lambda_function_name}_${var.environment}"
+    function_name    = local.lambda_function_name
     role             = aws_iam_role.lambda_func_iam_role.arn
     package_type     = "Image"
     image_uri        = var.lambda_function_image_uri

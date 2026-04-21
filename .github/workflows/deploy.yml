@@ -46,4 +46,4 @@ jobs:
               run: pytest lambda_src/integration_test/
             
             - name: Deploy prod environment
-              run: source deploy.sh prod
+              run: source deploy.sh prod auto-yes

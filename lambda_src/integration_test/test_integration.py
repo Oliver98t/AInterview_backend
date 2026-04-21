@@ -1,9 +1,7 @@
 import os
 import requests
 from requests_aws4auth import AWS4Auth
-
 import subprocess
-
 
 def get_lambda_function_url(function_name: str, region: str = "eu-west-2") -> str:
     result = subprocess.run(
@@ -26,7 +24,6 @@ def get_lambda_function_url(function_name: str, region: str = "eu-west-2") -> st
     )
     return result.stdout.strip()
 
-
 def test_speech_to_text():
     access_key = os.environ["AWS_ACCESS_KEY_ID"]
     secret_key = os.environ["AWS_SECRET_ACCESS_KEY"]
@@ -40,7 +37,7 @@ def test_speech_to_text():
         service,
     )
 
-    url = get_lambda_function_url("SpeechToText_dev")
+    url = get_lambda_function_url("speech_to_text_dev")
     params = {"user": "test"}
     response = requests.get(url, params=params, auth=auth)
     assert response.status_code == 200

@@ -106,7 +106,7 @@ resource "aws_iam_role_policy" "lambda_dynamodb_access" {
 }
 
 resource "aws_ecr_repository" "ECR" {
-  name = "${lower(var.lambda_function_name)}-${var.environment}"
+  name = "${lower(var.lambda_function_name)}_${var.environment}"
     force_delete = true
 }
 
