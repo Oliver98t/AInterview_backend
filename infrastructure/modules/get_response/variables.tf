@@ -25,26 +25,9 @@ variable "log_level" {
     default     = "info"
 }
 
-variable "local_test" {
-    description = "environment variable for local testing"
-    type        = string
-    default     = "LOCAL_TEST"
-}
-
 variable "application_name" {
     description = "Name of the application"
     type        = string
-}
-
-variable "queue_arn" {
-    description = "ARN of the SQS queue that triggers this Lambda"
-    type        = string
-}
-
-variable "sqs_batch_size" {
-    description = "Number of messages to process per Lambda invocation"
-    type        = number
-    default     = 10
 }
 
 variable "dynamodb_table_arn" {

@@ -24,3 +24,8 @@ variable "speech_to_text_image_uri" {
 	description = "Name of the application"
 	type        = string
 }
+
+variable "get_response_image_uri" {
+	description = "Name of the application"
+	type        = string
+}

@@ -25,6 +25,7 @@ def handler(event, context):
 
     if LOCAL_TEST != None:
         TABLENAME = os.environ['TABLE_NAME']
+        logger.info("writing to dynamodb")
         dynamo.put_item(
             TableName=TABLENAME,
             Item={

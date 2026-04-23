@@ -18,6 +18,13 @@ module "lambda_queue"  {
   application_name          = var.application_name
 }
 
+module "storage" {
+    source = "./modules/storage"
+    aws_region = var.aws_region
+    environment = var.environment
+    application_name = var.application_name
+}
+
 module "response_lambda_function"  {
   source = "./modules/response"
 
@@ -27,4 +34,18 @@ module "response_lambda_function"  {
   application_name          = var.application_name
   lambda_function_image_uri = var.response_image_uri
   queue_arn                 = module.lambda_queue.queue_arn
+  dynamodb_table_arn        = module.storage.dynamodb_table_arn
+  dynamodb_table_name       = module.storage.dynamodb_table_name
+}
+
+module "get_response_lambda_function" {
+    source = "./modules/get_response"
+
+    aws_region                  = var.aws_region
+    lambda_function_name        = "get_response"
+    environment                 = var.environment
+    application_name            = var.application_name
+    lambda_function_image_uri   = var.get_response_image_uri
+    dynamodb_table_arn          = module.storage.dynamodb_table_arn
+    dynamodb_table_name         = module.storage.dynamodb_table_name
 }

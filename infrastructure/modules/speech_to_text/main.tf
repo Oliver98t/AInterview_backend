@@ -201,6 +201,12 @@ resource "aws_lambda_function" "lambda_func" {
     }
 }
 
+# CloudWatch log group for Lambda
+resource "aws_cloudwatch_log_group" "lambda_log_group" {
+  name              = "/aws/lambda/${aws_lambda_function.lambda_func.function_name}"
+  retention_in_days = 14
+}
+
 # Lambda Function URL (provides HTTP endpoint)
 resource "aws_lambda_function_url" "lambda_func_url" {
     function_name      = aws_lambda_function.lambda_func.function_name

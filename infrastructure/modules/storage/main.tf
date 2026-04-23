@@ -1,0 +1,19 @@
+provider "aws" {
+    region = var.aws_region
+}
+
+resource "aws_dynamodb_table" "response_table" {
+    name         = "${lower(var.application_name)}-response-${var.environment}"
+    billing_mode = "PAY_PER_REQUEST"
+    hash_key     = "id"
+
+    attribute {
+        name = "id"
+        type = "S"
+    }
+
+    tags = {
+        Environment = var.environment
+        Application = var.application_name
+    }
+}

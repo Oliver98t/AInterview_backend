@@ -68,22 +68,6 @@ resource "aws_iam_role_policy" "lambda_bedrock_access" {
     policy = data.aws_iam_policy_document.lambda_bedrock_access.json
 }
 
-resource "aws_dynamodb_table" "response_table" {
-    name         = "${lower(var.application_name)}-response-${var.environment}"
-    billing_mode = "PAY_PER_REQUEST"
-    hash_key     = "id"
-
-    attribute {
-        name = "id"
-        type = "S"
-    }
-
-    tags = {
-        Environment = var.environment
-        Application = var.application_name
-    }
-}
-
 data "aws_iam_policy_document" "lambda_dynamodb_access" {
     statement {
         effect = "Allow"
@@ -95,7 +79,7 @@ data "aws_iam_policy_document" "lambda_dynamodb_access" {
             "dynamodb:Query",
             "dynamodb:Scan"
         ]
-        resources = [aws_dynamodb_table.response_table.arn]
+        resources = [var.dynamodb_table_arn]
     }
 }
 
@@ -122,9 +106,15 @@ resource "aws_lambda_function" "lambda_func" {
         variables = {
             ENVIRONMENT = var.environment
             LOCAL_TEST  = var.local_test
-            TABLE_NAME  = aws_dynamodb_table.response_table.name
+            TABLE_NAME  = var.dynamodb_table_name
         }
     }
+}
+
+# CloudWatch log group for Lambda
+resource "aws_cloudwatch_log_group" "lambda_log_group" {
+  name              = "/aws/lambda/${aws_lambda_function.lambda_func.function_name}"
+  retention_in_days = 14
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_trigger" {

@@ -38,6 +38,7 @@ build_tag_push()
     echo "$image_uri"
 }
 
+get_response_image_uri=$(build_tag_push "lambda_src/get_response/" "get_response_")
 response_image_uri=$(build_tag_push "lambda_src/response/" "response_")
 speechtotext_image_uri=$(build_tag_push "lambda_src/speech_to_text/" "speech_to_text_") 
 
@@ -51,12 +52,14 @@ terraform init -reconfigure \
 if [ "$auto" = "auto-yes" ]; then
     terraform apply -auto-approve \
         -var="environment=$env" \
+        -var="get_response_image_uri=$get_response_image_uri" \
         -var="response_image_uri=$response_image_uri" \
         -var="speech_to_text_image_uri=$speechtotext_image_uri" \
         -var="aws_region=$region"
 else
     terraform apply \
         -var="environment=$env" \
+        -var="get_response_image_uri=$get_response_image_uri" \
         -var="response_image_uri=$response_image_uri" \
         -var="speech_to_text_image_uri=$speechtotext_image_uri" \
         -var="aws_region=$region"
