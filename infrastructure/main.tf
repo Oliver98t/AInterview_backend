@@ -8,6 +8,7 @@ module "speech_to_text_lambda_function"  {
   lambda_function_image_uri = var.speech_to_text_image_uri
   queue_url                 = module.lambda_queue.queue_url
   queue_arn                 = module.lambda_queue.queue_arn
+  local_test                = var.local_test
 }
 
 module "lambda_queue"  {
@@ -36,6 +37,7 @@ module "response_lambda_function"  {
   queue_arn                 = module.lambda_queue.queue_arn
   dynamodb_table_arn        = module.storage.dynamodb_table_arn
   dynamodb_table_name       = module.storage.dynamodb_table_name
+  local_test                = var.local_test
 }
 
 module "get_response_lambda_function" {

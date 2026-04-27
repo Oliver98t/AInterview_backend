@@ -15,6 +15,11 @@ variable "environment" {
 	type        = string
 }
 
+variable "local_test" {
+    description = "flag for local testing"
+    type        = string
+}
+
 variable "response_image_uri" {
 	description = "Name of the application"
 	type        = string

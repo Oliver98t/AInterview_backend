@@ -188,10 +188,11 @@ resource "aws_lambda_function" "lambda_func" {
 
     environment {
         variables = {
-            ENVIRONMENT = var.environment
-            LOG_LEVEL   = var.log_level
-            S3_BUCKET   = aws_s3_bucket.lambda_bucket.bucket
-            SQS_QUEUE_URL = var.queue_url
+            ENVIRONMENT     = var.environment
+            LOG_LEVEL       = var.log_level
+            S3_BUCKET       = aws_s3_bucket.lambda_bucket.bucket
+            SQS_QUEUE_URL   = var.queue_url
+            LOCAL_TEST      = var.local_test
         }
     }
 

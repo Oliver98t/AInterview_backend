@@ -17,9 +17,9 @@ sqs: SQSClient = boto3.client('sqs')
 # set up env variables
 LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
 S3_BUCKET = os.environ.get('S3_BUCKET', None)
+QUEUE_URL = os.environ['SQS_QUEUE_URL']
 
 def handler(event: dict, context):
-    logger.info("Handler called")
     logger.info(f"LOCAL_TEST: {LOCAL_TEST}")
     logger.info(f"S3_BUCKET: {S3_BUCKET}")
     logger.info(f"Event: {event}")
@@ -29,10 +29,10 @@ def handler(event: dict, context):
     transcription = transcribe.transcribe()
 
     if LOCAL_TEST != None:
-        queue_url = os.environ['SQS_QUEUE_URL']
         sqs.send_message(
-            QueueUrl=queue_url,
+            QueueUrl=QUEUE_URL,
             MessageBody=json.dumps({
+                "jobId": str(uuid.uuid4()),
                 "user": user,
                 "transcription": transcription}))
 

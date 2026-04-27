@@ -28,7 +28,6 @@ variable "log_level" {
 variable "local_test" {
     description = "environment variable for local testing"
     type        = string
-    default     = "LOCAL_TEST"
 }
 
 variable "application_name" {

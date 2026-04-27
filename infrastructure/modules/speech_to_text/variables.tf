@@ -39,3 +39,8 @@ variable "queue_arn" {
     description = "ARN of the SQS queue used for downstream processing"
     type        = string
 }
+
+variable "local_test" {
+    description = "flag for local testing"
+    type        = string
+}

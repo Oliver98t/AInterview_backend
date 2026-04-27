@@ -19,6 +19,7 @@ ENCRYPT=true
 
 account_id=$(aws sts get-caller-identity --query "Account" --output text)
 region="eu-west-2"
+local_test=true
 registry_url="$account_id.dkr.ecr.$region.amazonaws.com"
 commit=$(git rev-parse --short HEAD)
 
@@ -56,13 +57,15 @@ if [ "$auto" = "auto-yes" ]; then
         -var="get_response_image_uri=$get_response_image_uri" \
         -var="response_image_uri=$response_image_uri" \
         -var="speech_to_text_image_uri=$speechtotext_image_uri" \
-        -var="aws_region=$region"
+        -var="aws_region=$region" \
+        -var="local_test=$local_test" 
 else
     terraform apply \
         -var="environment=$env" \
         -var="get_response_image_uri=$get_response_image_uri" \
         -var="response_image_uri=$response_image_uri" \
         -var="speech_to_text_image_uri=$speechtotext_image_uri" \
-        -var="aws_region=$region"
+        -var="aws_region=$region" \
+        -var="local_test=$local_test" 
 fi
 cd ..

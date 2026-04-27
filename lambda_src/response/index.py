@@ -20,6 +20,7 @@ def handler(event, context):
     message = event['Records'][0]['body']
     data: dict = json.loads(message)
     # write event data to DDB table
+    job_id = data.get('jobId')
     user = data.get('user')
     transcript = data.get('transcription')
     response = generate_response(transcript)
@@ -30,7 +31,7 @@ def handler(event, context):
         dynamo.put_item(
             TableName=TABLENAME,
             Item={
-                'id': {'S': str(uuid.uuid4())},
+                'id': {'S': str(job_id)},
                 'timestamp': {'S': datetime.datetime.now().isoformat()},
                 'transcript': {'S': str(transcript)},
                 'response': {'S': str(response)}
