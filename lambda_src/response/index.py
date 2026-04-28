@@ -12,6 +12,7 @@ logger.setLevel(logging.INFO)
 # create the DynamoDB resource
 dynamo = boto3.client('dynamodb')
 LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
+TABLENAME = os.environ.get('TABLE_NAME')
 
 def handler(event, context):
     logger.info(f"LOCAL_TEST: {LOCAL_TEST}")
@@ -26,7 +27,6 @@ def handler(event, context):
     response = generate_response(transcript)
 
     if LOCAL_TEST != None:
-        TABLENAME = os.environ['TABLE_NAME']
         logger.info("writing to dynamodb")
         dynamo.put_item(
             TableName=TABLENAME,

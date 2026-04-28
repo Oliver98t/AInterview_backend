@@ -25,7 +25,6 @@ commit=$(git rev-parse --short HEAD)
 
 aws ecr get-login-password --region eu-west-2 | docker login --username AWS \
 --password-stdin $registry_url
-# TODO add tag delete
 build_tag_push()
 {
     src=$1
@@ -33,7 +32,6 @@ build_tag_push()
     tag="${docker_repo}:${commit}"
     echo "Building $tag from $src" >&2
     docker build -t $tag $src >&2
-    #aws ecr batch-delete-image --repository-name $docker_repo --image-ids imageTag=$commit
     image_uri="$registry_url/$tag"
     docker tag $tag $image_uri >&2
     docker push $registry_url/$tag >&2

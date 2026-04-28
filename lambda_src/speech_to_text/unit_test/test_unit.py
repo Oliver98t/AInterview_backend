@@ -2,13 +2,11 @@ import lambda_src.speech_to_text.index as stt
 from lambda_src.speech_to_text.index import Transcribe, handler
 import json
 
-
 def test_transcribe():
     transcribe = Transcribe(bucket="ainterviewupload", user="test")
     transcription = transcribe.transcribe()
     test_trasncription = "Give me a series of Python interview questions."
     assert transcription == test_trasncription
-
 
 event_test_data = {
     "version": "2.0",
@@ -63,10 +61,9 @@ event_test_data = {
     "isBase64Encoded": False,
 }
 
-
 def test_handler(monkeypatch):
     monkeypatch.setattr(stt, "S3_BUCKET", "ainterviewupload")
     result = handler(event=event_test_data, context=None)
     body = json.loads(result['body'])
     assert result['statusCode'] == 200
-    assert body == "transcription: Give me a series of Python interview questions."
+    assert body['transcription'] == "Give me a series of Python interview questions."
