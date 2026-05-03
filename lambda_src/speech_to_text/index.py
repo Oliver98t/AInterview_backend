@@ -19,6 +19,8 @@ LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
 S3_BUCKET = os.environ.get('S3_BUCKET', None)
 QUEUE_URL = os.environ.get('SQS_QUEUE_URL')
 
+#TODO modify to be triggered by a flac file upload to bucket 
+
 def handler(event: dict, context):
     logger.info(f"LOCAL_TEST: {LOCAL_TEST}")
     logger.info(f"S3_BUCKET: {S3_BUCKET}")

@@ -123,3 +123,16 @@ resource "aws_lambda_event_source_mapping" "sqs_trigger" {
     batch_size       = var.sqs_batch_size
     enabled          = true
 }
+
+resource "aws_lambda_function_url" "lambda_func_url" {
+    function_name      = aws_lambda_function.lambda_func.function_name
+    authorization_type = "AWS_IAM"
+
+    cors {
+        allow_credentials = false
+        allow_origins     = ["*"]
+        allow_methods     = ["GET", "POST"]
+        allow_headers     = ["*"]
+        max_age           = 86400
+    }
+}
