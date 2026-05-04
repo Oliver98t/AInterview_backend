@@ -19,6 +19,15 @@ TABLENAME = os.environ.get('TABLE_NAME')
 def handler(event, context):
     logger.info(f"LOCAL_TEST: {LOCAL_TEST}")
     logger.info(f"Event: {event}")
+
+    if event.get('Records'):
+        data = sqs_event(event)
+    elif event.get('version'):
+        data = url_event(event)
+
+    return data
+
+def sqs_event(event):
     # get the message out of the SQS event
     message = event['Records'][0]['body']
     data: dict = json.loads(message)
@@ -28,20 +37,42 @@ def handler(event, context):
     transcript = data.get('transcription')
     response = generate_response(transcript)
 
+    result = write_to_db({"user": user, "response": response, "job_id": job_id})
+    return result
+
+def url_event(event) -> dict:
+    try:
+        query_parameters: dict = event.get('queryStringParameters')
+        job_id = str(uuid.uuid4())
+        user = query_parameters.get("user")
+        transcript = query_parameters.get("transcript")
+        response = generate_response(transcript)
+
+        write_to_db({"user": user, "response": response, "job_id": job_id})
+        status_code = 200
+        body = json.dumps({"jobId": job_id, "transcription": response})
+    except:
+        status_code = 500
+        body = None
+    return {
+        'statusCode': status_code,
+        'body': body
+    }
+
+def write_to_db(data: dict):
+    result = data['response']
     if LOCAL_TEST != None:
         logger.info("writing to dynamodb")
         dynamo.put_item(
             TableName=TABLENAME,
             Item={
-                'id': {'S': str(job_id)},
+                'id': {'S': str(data['job_id'])},
                 'timestamp': {'S': datetime.datetime.now().isoformat()},
-                'transcript': {'S': str(transcript)},
-                'response': {'S': str(response)}
+                'transcript': {'S': str(data['transcript'])},
+                'response': {'S': str(data['response'])}
             }
         )
-    else:
-        return {"response": response}
-
+    return result
 
 def generate_response(prompt: str):
     client: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")
