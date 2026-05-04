@@ -87,4 +87,4 @@ url_call_event_test_data = {
 def test_url_event_handler():
     result = handler(event=url_call_event_test_data, context=None)
     print(result)
-    #assert type(result) == str
+    assert type(result) == dict

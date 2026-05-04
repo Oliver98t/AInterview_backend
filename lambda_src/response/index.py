@@ -37,7 +37,10 @@ def sqs_event(event):
     transcript = data.get('transcription')
     response = generate_response(transcript)
 
-    result = write_to_db({"user": user, "response": response, "job_id": job_id})
+    result = write_to_db({"user": user, 
+                          "transcript": transcript,
+                          "response": response, 
+                          "job_id": job_id})
     return result
 
 def url_event(event) -> dict:
@@ -48,9 +51,13 @@ def url_event(event) -> dict:
         transcript = query_parameters.get("transcript")
         response = generate_response(transcript)
 
-        write_to_db({"user": user, "response": response, "job_id": job_id})
+        write_to_db({"user": user, 
+                    "transcript": transcript,
+                    "response": response, 
+                    "job_id": job_id})
+        
         status_code = 200
-        body = json.dumps({"jobId": job_id, "transcription": response})
+        body = json.dumps({"jobId": job_id, "response": response})
     except:
         status_code = 500
         body = None
