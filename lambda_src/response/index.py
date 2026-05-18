@@ -192,7 +192,7 @@ def create_message_history(history: dict)-> list:
 
             message_history.append(
                 {
-                    "role": "user",
+                    "role": role,
                     "content": [{"text": str(item.get('response'))}]
                 })
         except Exception as error:
@@ -218,7 +218,7 @@ def generate_response(prompt: str, user_name: str):
     logger.info(f"message_history {len(message_history)} {message_history}")
     messages = message_history
     
-    messages.append({"role": "user",
+    messages.append({"role": "assistant",
                      "content": [{"text": prompt}]})
     
     #logger.info(f"messages {messages}")
