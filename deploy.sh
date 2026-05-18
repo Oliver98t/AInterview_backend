@@ -31,7 +31,7 @@ build_tag_push()
     docker_repo=$2
     tag="${docker_repo}:${commit}"
     echo "Building $tag from $src" >&2
-    docker build -t $tag $src >&2
+    docker build --provenance=false -t $tag $src >&2
     image_uri="$registry_url/$tag"
     docker tag $tag $image_uri >&2
     docker push $registry_url/$tag >&2

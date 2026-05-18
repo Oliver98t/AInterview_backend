@@ -183,7 +183,7 @@ def create_message_history(history: dict)-> list:
     message_history = []
     for item in items:
         try:
-            submit_type = json.loads(item.get('type'))
+            submit_type = item.get('type')
 
             if submit_type == "question":
                 role = "assistant"

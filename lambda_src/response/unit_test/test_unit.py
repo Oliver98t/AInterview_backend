@@ -107,13 +107,7 @@ def test_url_event_handler():
     print(result)
     assert type(result) == dict
 
-test_item = {
-            'response': '{"question": "Explain the difference between a list and a tuple in Python, and provide an example where you might prefer using a tuple over a list.", "answer": "In Python, both lists and tuples are used to store collections of items, but they differ in mutability and syntax.\\n\\n- **List**: Defined using square brackets `[]`. Lists are **mutable**, meaning their elements can be changed, added, or removed after creation.\\n  \\n  Example: `my_list = [1, 2, 3]`\\n\\n- **Tuple**: Defined using parentheses `()`. Tuples are **immutable**, meaning once created, their elements cannot be modified.\\n  \\n  Example: `my_tuple = (1, 2, 3)`\\n\\n**Preference for tuples over lists**: Tuples are often preferred when you want to ensure that the data remains constant throughout the program. This can be useful for protecting data integrity. For example, in a function that returns multiple values, using a tuple ensures the caller cannot accidentally modify the returned data.\\n\\nExample usage:\\n\\n# Using a tuple to return multiple values from a function\\ndef get_user_info(user_id):\\n    name = \\"John\\"\\n    age = 30\\n    return (name, age)\\n\\nuser_data = get_user_info(1)\\nprint(user_data)  # Output: (\'John\', 30)\\n# user_data[0] = \'Jane\'  # This would raise a TypeError because tuples are immutable\\n\\nIn this case, using a tuple ensures that the user\'s name and age remain constant after being retrieved."}',
-            'date': '2026-05-16T15:12:36.136933',
-            'job_id': 'b8b0b324-5b6c-43a9-9bda-a489ef4be286',
-            'transcript': 'give just an interview question and answer in a json object string like {question: , answer:} for a Python dev, give just the object string and nothing else no mark down etc',
-            'user_name': 'test',
-            'timestamp': 1778944356 }
+test_item = {'response': 'alright', 'date': '2026-05-18T07:37:08.723244', 'job_id': '4ec72c78-d6fb-436d-a8c5-a271807a5721', 'user_name': 'test', 'type': 'answer', 'timestamp': '1779089828'}
 
 test_list = []
 for _ in range(10):
@@ -121,7 +115,8 @@ for _ in range(10):
     
 history = { 'Items': test_list }
 
-def test_create_history():
+def test_create_message_history():
     message_history = create_message_history(history)
     print(message_history)
-    assert type(message_history) == list
+    assert True == False
+    #assert type(message_history) == list
