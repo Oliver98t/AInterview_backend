@@ -183,19 +183,18 @@ def create_message_history(history: dict)-> list:
     message_history = []
     for item in items:
         try:
-            response: dict = json.loads(item.get('response'))
+            submit_type = json.loads(item.get('type'))
+
+            if submit_type == "question":
+                role = "assistant"
+            elif submit_type == "answer":
+                role = "user"
 
             message_history.append(
                 {
-                    "role": "user",
-                    "content": [{"text": str(item.get('message'))}]
+                    "role": role,
+                    "content": [{"text": str(item.get('response'))}]
                 })
-            message_history.append(
-                {
-                    "role": "assistant",
-                    "content": [{"text": str(response)}]
-                })
-            # TODO add score and reason logic
         except Exception as error:
             logger.error(error)
 
