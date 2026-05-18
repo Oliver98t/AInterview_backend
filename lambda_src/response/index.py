@@ -192,7 +192,7 @@ def create_message_history(history: dict)-> list:
 
             message_history.append(
                 {
-                    "role": role,
+                    "role": "user",
                     "content": [{"text": str(item.get('response'))}]
                 })
         except Exception as error:
