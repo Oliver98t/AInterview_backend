@@ -179,7 +179,8 @@ def write_to_db(data: dict):
 # TODO create a history function
 def create_message_history(history: dict)-> list:
     items = history.get('Items')
-    items_num = len(items)
+    # DynamoDB returns newest-first; reverse to chronological order for the model
+    items = list(reversed(items))
     message_history = []
     for item in items:
         try:
