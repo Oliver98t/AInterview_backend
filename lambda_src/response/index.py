@@ -192,7 +192,7 @@ def create_message_history(history: dict)-> list:
 
             message_history.append(
                 {
-                    "role": "user",
+                    "role": role,
                     "content": [{"text": str(item.get('response'))}]
                 })
         except Exception as error:
@@ -214,10 +214,9 @@ def generate_response(prompt: str, user_name: str):
     history = read_db(user_value=user_name)
     logger.info(f"history {len(history['Items'])} {history}")
     
-    message_history = create_message_history(history=history)
-    logger.info(f"message_history {len(message_history)} {message_history}")
-    messages = message_history
-
+    messages = create_message_history(history=history)
+    logger.info(f"message_history {len(messages)} {messages}")
+      
     messages.append({"role": "user",
                      "content": [{"text": prompt}]})
 
