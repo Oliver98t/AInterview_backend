@@ -22,7 +22,7 @@ LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
 TABLENAME = os.environ.get('TABLE_NAME')
 
 CHAT_WINDOW = 10
-
+# TODO add evaluation stage
 def handler(event, context):
     """Lambda entry point. Routes to the correct handler based on the event source.
 
@@ -176,7 +176,6 @@ def write_to_db(data: dict):
         )
     return result
 
-# TODO create a history function
 def create_message_history(history: dict)-> list:
     items = history.get('Items')
     # DynamoDB returns newest-first; reverse to chronological order for the model
