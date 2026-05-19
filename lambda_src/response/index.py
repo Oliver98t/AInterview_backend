@@ -192,7 +192,7 @@ def create_message_history(history: dict)-> list:
 
             message_history.append(
                 {
-                    "role": role,
+                    "role": "user",
                     "content": [{"text": str(item.get('response'))}]
                 })
         except Exception as error:
@@ -217,14 +217,23 @@ def generate_response(prompt: str, user_name: str):
     message_history = create_message_history(history=history)
     logger.info(f"message_history {len(message_history)} {message_history}")
     messages = message_history
-    
-    messages.append({"role": "assistant",
+
+    messages.append({"role": "user",
                      "content": [{"text": prompt}]})
-    
+
+    system_prompt = (
+        "You are an AI technical interviewer. "
+        "Your job is to ask the candidate one interview question at a time. "
+        "Review the full conversation history carefully and do NOT repeat or rephrase any question that has already been asked. "
+        "Each question must cover a distinct topic or concept not yet explored in this conversation. "
+        "Ask only one question per response."
+    )
+
     #logger.info(f"messages {messages}")
     # send the transcript to the model and retrieve the generated text
     response = bedrock.converse(
         modelId="global.amazon.nova-2-lite-v1:0",
+        system=[{"text": system_prompt}],
         messages=messages
     )
 
