@@ -171,7 +171,7 @@ def write_to_db(data: dict):
                 'date':         datetime.datetime.now().isoformat(),
                 'job_id':       str(data['job_id']),
                 'response':     str(data['response']),
-                'type':         str(data['type'])          
+                'role':         str(data['role'])          
             }
         )
     return result
