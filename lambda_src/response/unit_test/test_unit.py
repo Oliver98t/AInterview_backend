@@ -9,7 +9,7 @@ from lambda_src.response.index import generate_response, handler, create_message
 def test_generate_response():
     """Test that generate_response returns a non-empty string for any prompt."""
     prompt: str = "this is a test prompt"
-    response = generate_response(prompt)
+    response = generate_response(prompt=prompt, user_name="test")
     # the model should always return a string regardless of prompt content
     assert type(response) == str
 
@@ -118,5 +118,5 @@ history = { 'Items': test_list }
 def test_create_message_history():
     message_history = create_message_history(history)
     print(message_history)
-    assert True == False
-    #assert type(message_history) == list
+    #assert True == False
+    assert type(message_history) == list

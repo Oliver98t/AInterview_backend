@@ -10,7 +10,7 @@ import json
 
 def test_transcribe():
     """Test that the Transcribe class submits a job and returns the expected transcript."""
-    transcribe = Transcribe(bucket="ainterviewupload", user="test")
+    transcribe = Transcribe(bucket="ainterviewupload-dev", user="test")
     transcription = transcribe.transcribe()
     # expected transcript text from the test audio file
     test_trasncription = "Give me a series of Python interview questions."

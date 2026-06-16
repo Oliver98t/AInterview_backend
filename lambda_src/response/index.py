@@ -94,22 +94,22 @@ def url_event(event) -> dict:
         job_id = str(uuid.uuid4())
         user_name = query_parameters.get("user_name")
         message = query_parameters.get("message")
-        submit_type = query_parameters.get("type")
+        role = query_parameters.get("role")
         
         # generate an AI response for the provided transcript
         body = None
         response = None
-        if submit_type == "question":
+        if role == "assistant":
             response = generate_response(prompt=message, user_name=user_name)
             body = json.dumps({"jobId": job_id, "response": response})
-        elif submit_type == "answer":
+        elif role == "user":
             response = message
             body = json.dumps({"state": "succcess"})
             
         write_to_db({"user_name":   user_name, 
                     "response":     response, 
                     "job_id":       job_id,
-                    "type":         submit_type})
+                    "role":         role})
         
         status_code = 200
     except Exception as e:
@@ -183,12 +183,7 @@ def create_message_history(history: dict)-> list:
     message_history = []
     for item in items:
         try:
-            submit_type = item.get('type')
-
-            if submit_type == "question":
-                role = "assistant"
-            elif submit_type == "answer":
-                role = "user"
+            role = item.get('role')
 
             message_history.append(
                 {
