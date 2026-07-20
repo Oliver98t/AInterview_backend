@@ -126,6 +126,7 @@ def url_event(event) -> dict:
 
 def read_db(user_value: str):
     response = None
+    session_reset = False
     try:
         table = ddb_resource.Table(TABLENAME)
         # Use query instead of scan, assuming user_name is the partition key and timestamp is the sort key
@@ -139,6 +140,7 @@ def read_db(user_value: str):
 
     if len(response['Items']) >= CHAT_WINDOW:
         # delete db contents greater
+        session_reset = True
         items = response.get('Items', [])
         with table.batch_writer() as batch:
             for item in items:
@@ -148,8 +150,10 @@ def read_db(user_value: str):
                         'timestamp': item['timestamp']
                     }
                 )
+    else:
+        session_reset = False
     
-    return response
+    return {"response": response, "session_reset": session_reset}
 
 def write_to_db(data: dict):
     """Persist the response data to DynamoDB.
@@ -208,7 +212,10 @@ def generate_response(prompt: str, user_name: str):
     """
     # Bedrock currently only supports the client API in boto3, not resource API.
     bedrock: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")
-    history = read_db(user_value=user_name)
+    db_response = read_db(user_value=user_name)
+    history = db_response.get('response')
+    session_reset = db_response.get('session_reset')
+    logger.info(f"session reset {session_reset}")
     logger.info(f"history {len(history['Items'])} {history}")
     
     messages = create_message_history(history=history)
