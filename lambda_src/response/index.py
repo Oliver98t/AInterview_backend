@@ -140,10 +140,8 @@ def read_db(user_value: str):
     if len(response['Items']) >= CHAT_WINDOW:
         # delete db contents greater
         items = response.get('Items', [])
-        # Keep only the newest 'keep_n' items, delete the rest
-        to_delete = items[CHAT_WINDOW:]
         with table.batch_writer() as batch:
-            for item in to_delete:
+            for item in items:
                 batch.delete_item(
                     Key={
                         'user_name': item['user_name'],
