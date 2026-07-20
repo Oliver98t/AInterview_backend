@@ -23,6 +23,7 @@ TABLENAME = os.environ.get('TABLE_NAME')
 
 CHAT_WINDOW = 10
 # TODO add evaluation stage
+# TODO delete chat history when opening up new session
 def handler(event, context):
     """Lambda entry point. Routes to the correct handler based on the event source.
 
@@ -95,6 +96,7 @@ def url_event(event) -> dict:
         user_name = query_parameters.get("user_name")
         message = query_parameters.get("message")
         role = query_parameters.get("role")
+        session_id = query_parameters.get("session_id")
         
         # generate an AI response for the provided transcript
         body = None
@@ -109,7 +111,8 @@ def url_event(event) -> dict:
         write_to_db({"user_name":   user_name, 
                     "response":     response, 
                     "job_id":       job_id,
-                    "role":         role})
+                    "role":         role,
+                    "session_id":   session_id})
         
         status_code = 200
     except Exception as e:
@@ -171,7 +174,8 @@ def write_to_db(data: dict):
                 'date':         datetime.datetime.now().isoformat(),
                 'job_id':       str(data['job_id']),
                 'response':     str(data['response']),
-                'role':         str(data['role'])          
+                'role':         str(data['role']),
+                'session_id':   str(data['session_id'])          
             }
         )
     return result
