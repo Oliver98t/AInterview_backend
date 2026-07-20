@@ -102,8 +102,10 @@ def url_event(event) -> dict:
         body = None
         response = None
         if role == "assistant":
-            response = generate_response(prompt=message, user_name=user_name)
-            body = json.dumps({"jobId": job_id, "response": response})
+            generate_response_result = generate_response(prompt=message, user_name=user_name)
+            response = generate_response_result.get('response')
+            session_reset = generate_response_result.get('session_reset')
+            body = json.dumps({"jobId": job_id, "response": response, "session_reset": session_reset})
         elif role == "user":
             response = message
             body = json.dumps({"state": "succcess"})
@@ -240,4 +242,5 @@ def generate_response(prompt: str, user_name: str):
         messages=messages
     )
 
-    return response["output"]["message"]["content"][0]["text"]
+    return {'response': response["output"]["message"]["content"][0]["text"],
+            'session_reset': session_reset}
