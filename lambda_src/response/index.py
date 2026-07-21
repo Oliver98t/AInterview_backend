@@ -68,7 +68,7 @@ def sqs_event(event):
     user_name = data.get('user_name')
     transcript = data.get('transcription')
     # generate an AI response for the transcript
-    response = generate_response(prompt=transcript, user_name=user_name)
+    response = generate_response(prompt=transcript, user_name=user_name, clear_db=False)
 
     # write event data to DDB table
     result = write_to_db({"user": user_name, 
@@ -97,12 +97,18 @@ def url_event(event) -> dict:
         message = query_parameters.get("message")
         role = query_parameters.get("role")
         session_id = query_parameters.get("session_id")
+        clear_db_raw = query_parameters.get("clear_db")
+        clear_db = str(clear_db_raw).strip().lower() in {"1", "true", "yes", "y"}
         
         # generate an AI response for the provided transcript
         body = None
         response = None
         if role == "assistant":
-            generate_response_result = generate_response(prompt=message, user_name=user_name)
+            generate_response_result = generate_response(
+                prompt=message,
+                user_name=user_name,
+                clear_db=clear_db,
+            )
             response = generate_response_result.get('response')
             response_num = generate_response_result.get('response_num')
             body = json.dumps({"jobId": job_id, "response": response, 'response_num': response_num})
@@ -126,15 +132,29 @@ def url_event(event) -> dict:
         'body': body
     }
 
-def read_db_by_user(user_value: str):
+def read_db_by_user(user_name: str, clear_db: bool = False):
     response = None
     try:
         table = ddb_resource.Table(TABLENAME)
         # Use query instead of scan, assuming user_name is the partition key and timestamp is the sort key
         response = table.query(
-            KeyConditionExpression=Key('user_name').eq(user_value),
+            KeyConditionExpression=Key('user_name').eq(user_name),
             ScanIndexForward=False  # Descending order (newest first)
         )
+
+        if clear_db:
+            items = response.get("Items", [])
+            with table.batch_writer() as batch:
+                for item in items:
+                    batch.delete_item(
+                        Key={
+                            'user_name': item['user_name'],
+                            'timestamp': item['timestamp']
+                        }
+                    )
+            # After delete, return an empty history so the current prompt starts fresh.
+            response["Items"] = []
+            
     except Exception as e:
         logger.error(f"Exception: {e}")
         response = {"Items": []}
@@ -186,7 +206,7 @@ def create_message_history(history: dict)-> list:
 
     return message_history
 
-def generate_response(prompt: str, user_name: str):
+def generate_response(prompt: str, user_name: str, clear_db: bool = False):
     """Send a prompt to Amazon Bedrock and return the model's text response.
 
     Args:
@@ -197,7 +217,8 @@ def generate_response(prompt: str, user_name: str):
     """
     # Bedrock currently only supports the client API in boto3, not resource API.
     bedrock: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")
-    history = read_db_by_user(user_value=user_name)
+    
+    history = read_db_by_user(user_name=user_name, clear_db=clear_db)
     response_num = len(history['Items'])
     logger.info(f"history {response_num} {history}")
     
