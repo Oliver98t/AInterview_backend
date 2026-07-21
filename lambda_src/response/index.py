@@ -139,7 +139,7 @@ def read_db_by_user(user_value: str):
         logger.error(f"Exception: {e}")
         response = {"Items": []}
     
-    return {"response": response, "response_num": len(response)}
+    return response
 
 def write_to_db(data: dict):
     """Persist the response data to DynamoDB.
@@ -197,11 +197,9 @@ def generate_response(prompt: str, user_name: str):
     """
     # Bedrock currently only supports the client API in boto3, not resource API.
     bedrock: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")
-    db_response = read_db_by_user(user_value=user_name)
-    response_num = db_response.get('response_num') 
-    logger.info(response_num)
-    history = db_response.get('response')
-    logger.info(f"history {len(history['Items'])} {history}")
+    history = read_db_by_user(user_value=user_name)
+    response_num = len(history['Items'])
+    logger.info(f"history {response_num} {history}")
     
     messages = create_message_history(history=history)
     logger.info(f"message_history {len(messages)} {messages}")
