@@ -98,7 +98,7 @@ def url_event(event) -> dict:
         role = query_parameters.get("role")
         session_id = query_parameters.get("session_id")
         clear_db = bool(query_parameters.get("clear_db"))
-        
+        logger.info(f"clear: {clear_db}")
         # generate an AI response for the provided transcript
         body = None
         response = None
@@ -114,7 +114,8 @@ def url_event(event) -> dict:
         elif role == "user":
             response = message
             body = json.dumps({"state": "succcess"})
-            
+        
+
         write_to_db({"user_name":   user_name, 
                     "response":     response, 
                     "job_id":       job_id,
