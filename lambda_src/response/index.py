@@ -104,8 +104,8 @@ def url_event(event) -> dict:
         if role == "assistant":
             generate_response_result = generate_response(prompt=message, user_name=user_name)
             response = generate_response_result.get('response')
-            session_reset = generate_response_result.get('session_reset')
-            body = json.dumps({"jobId": job_id, "response": response, "session_reset": session_reset})
+            response_num = generate_response_result.get('response_num')
+            body = json.dumps({"jobId": job_id, "response": response, 'response_num': response_num})
         elif role == "user":
             response = message
             body = json.dumps({"state": "succcess"})
@@ -126,9 +126,8 @@ def url_event(event) -> dict:
         'body': body
     }
 
-def read_db(user_value: str):
+def read_db_by_user(user_value: str):
     response = None
-    session_reset = False
     try:
         table = ddb_resource.Table(TABLENAME)
         # Use query instead of scan, assuming user_name is the partition key and timestamp is the sort key
@@ -139,23 +138,8 @@ def read_db(user_value: str):
     except Exception as e:
         logger.error(f"Exception: {e}")
         response = {"Items": []}
-
-    if len(response['Items']) >= CHAT_WINDOW:
-        # delete db contents greater
-        session_reset = True
-        items = response.get('Items', [])
-        with table.batch_writer() as batch:
-            for item in items:
-                batch.delete_item(
-                    Key={
-                        'user_name': item['user_name'],
-                        'timestamp': item['timestamp']
-                    }
-                )
-    else:
-        session_reset = False
     
-    return {"response": response, "session_reset": session_reset}
+    return {"response": response, "response_num": len(response)}
 
 def write_to_db(data: dict):
     """Persist the response data to DynamoDB.
@@ -192,7 +176,6 @@ def create_message_history(history: dict)-> list:
     for item in items:
         try:
             role = item.get('role')
-
             message_history.append(
                 {
                     "role": role,
@@ -214,10 +197,10 @@ def generate_response(prompt: str, user_name: str):
     """
     # Bedrock currently only supports the client API in boto3, not resource API.
     bedrock: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")
-    db_response = read_db(user_value=user_name)
+    db_response = read_db_by_user(user_value=user_name)
+    response_num = db_response.get('response_num') 
+    logger.info(response_num)
     history = db_response.get('response')
-    session_reset = db_response.get('session_reset')
-    logger.info(f"session reset {session_reset}")
     logger.info(f"history {len(history['Items'])} {history}")
     
     messages = create_message_history(history=history)
@@ -243,4 +226,4 @@ def generate_response(prompt: str, user_name: str):
     )
 
     return {'response': response["output"]["message"]["content"][0]["text"],
-            'session_reset': session_reset}
+            'response_num': response_num}
