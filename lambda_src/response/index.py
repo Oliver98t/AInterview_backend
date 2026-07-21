@@ -97,7 +97,7 @@ def url_event(event) -> dict:
         message = query_parameters.get("message")
         role = query_parameters.get("role")
         session_id = query_parameters.get("session_id")
-        clear_db = bool(query_parameters.get("clear_db"))
+        clear_db = query_parameters.get("clear_db")
         logger.info(f"clear: {clear_db}")
         # generate an AI response for the provided transcript
         body = None
