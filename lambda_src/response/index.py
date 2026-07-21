@@ -97,8 +97,7 @@ def url_event(event) -> dict:
         message = query_parameters.get("message")
         role = query_parameters.get("role")
         session_id = query_parameters.get("session_id")
-        clear_db_raw = query_parameters.get("clear_db")
-        clear_db = str(clear_db_raw).strip().lower() in {"1", "true", "yes", "y"}
+        clear_db = bool(query_parameters.get("clear_db"))
         
         # generate an AI response for the provided transcript
         body = None
@@ -154,7 +153,7 @@ def read_db_by_user(user_name: str, clear_db: bool = False):
                     )
             # After delete, return an empty history so the current prompt starts fresh.
             response["Items"] = []
-            
+
     except Exception as e:
         logger.error(f"Exception: {e}")
         response = {"Items": []}
