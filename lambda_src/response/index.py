@@ -131,7 +131,7 @@ def url_event(event) -> dict:
         'body': body
     }
 
-def read_db_by_user(user_name: str, clear_db: bool = False):
+def read_db_by_user(user_name: str, clear_db: str):
     response = None
     try:
         table = ddb_resource.Table(TABLENAME)
@@ -141,7 +141,7 @@ def read_db_by_user(user_name: str, clear_db: bool = False):
             ScanIndexForward=False  # Descending order (newest first)
         )
 
-        if clear_db:
+        if clear_db == "clear":
             items = response.get("Items", [])
             with table.batch_writer() as batch:
                 for item in items:
@@ -205,7 +205,7 @@ def create_message_history(history: dict)-> list:
 
     return message_history
 
-def generate_response(prompt: str, user_name: str, clear_db: bool = False):
+def generate_response(prompt: str, user_name: str, clear_db: str):
     """Send a prompt to Amazon Bedrock and return the model's text response.
 
     Args:
