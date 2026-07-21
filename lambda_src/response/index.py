@@ -115,12 +115,12 @@ def url_event(event) -> dict:
             response = message
             body = json.dumps({"state": "succcess"})
         
-
-        write_to_db({"user_name":   user_name, 
-                    "response":     response, 
-                    "job_id":       job_id,
-                    "role":         role,
-                    "session_id":   session_id})
+        if clear_db != "clear":
+            write_to_db({"user_name":   user_name, 
+                        "response":     response, 
+                        "job_id":       job_id,
+                        "role":         role,
+                        "session_id":   session_id})
         
         status_code = 200
     except Exception as e:
