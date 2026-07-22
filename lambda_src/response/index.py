@@ -9,6 +9,7 @@ import time
 import os
 import json
 import uuid
+from .response_types import DbRecord, ResponseResult
 from mypy_boto3_dynamodb import DynamoDBServiceResource
 from mypy_boto3_bedrock_runtime import BedrockRuntimeClient
 from boto3.dynamodb.conditions import Key
@@ -70,6 +71,10 @@ def sqs_event(event):
     # generate an AI response for the transcript
     response = generate_response(prompt=transcript, user_name=user_name, clear_db=False)
 
+    db_record = DbRecord(
+    user_name=user_name,
+    response=response,
+    job_id=job_id)
     # write event data to DDB table
     result = write_to_db({"user": user_name, 
                           "transcript": transcript,
@@ -108,19 +113,22 @@ def url_event(event) -> dict:
                 user_name=user_name,
                 clear_db=clear_db,
             )
-            response = generate_response_result.get('response')
-            response_num = generate_response_result.get('response_num')
+            response = generate_response_result.response
+            response_num = generate_response_result.response_num
             body = json.dumps({"jobId": job_id, "response": response, 'response_num': response_num})
         elif role == "user":
             response = message
             body = json.dumps({"state": "succcess"})
         
         if clear_db != "clear":
-            write_to_db({"user_name":   user_name, 
-                        "response":     response, 
-                        "job_id":       job_id,
-                        "role":         role,
-                        "session_id":   session_id})
+            db_record = DbRecord(
+                user_name=user_name,
+                response=response,
+                job_id=job_id,
+                role=role,
+                session_id=session_id)
+            write_to_db(db_record)
+            body = "db cleared"
         
         status_code = 200
     except Exception as e:
@@ -161,7 +169,7 @@ def read_db_by_user(user_name: str, clear_db: str):
     
     return response
 
-def write_to_db(data: dict):
+def write_to_db(data: DbRecord):
     """Persist the response data to DynamoDB.
 
     Args:
@@ -170,20 +178,20 @@ def write_to_db(data: dict):
     Returns:
         The AI response string from data['response'].
     """
-    result = data['response']
+    result = data.response
     # only write to DynamoDB when running in a live environment (not local tests)
     if LOCAL_TEST != None:
         logger.info("writing to dynamodb")
         table = ddb_resource.Table(TABLENAME)
         table.put_item(
             Item={
-                'user_name':    str(data['user_name']),
+                'user_name':    str(data.user_name),
                 'timestamp':    int(time.time()),
                 'date':         datetime.datetime.now().isoformat(),
-                'job_id':       str(data['job_id']),
-                'response':     str(data['response']),
-                'role':         str(data['role']),
-                'session_id':   str(data['session_id'])          
+                'job_id':       str(data.job_id),
+                'response':     str(data.response),
+                'role':         str(data.role),
+                'session_id':   str(data.session_id)          
             }
         )
     return result
@@ -206,7 +214,7 @@ def create_message_history(history: dict)-> list:
 
     return message_history
 
-def generate_response(prompt: str, user_name: str, clear_db: str):
+def generate_response(prompt: str, user_name: str, clear_db: str) -> ResponseResult:
     """Send a prompt to Amazon Bedrock and return the model's text response.
 
     Args:
@@ -243,6 +251,6 @@ def generate_response(prompt: str, user_name: str, clear_db: str):
         system=[{"text": system_prompt}],
         messages=messages
     )
-
-    return {'response': response["output"]["message"]["content"][0]["text"],
-            'response_num': response_num}
+    response_result = ResponseResult(response=response["output"]["message"]["content"][0]["text"],
+                                     response_num=response_num)
+    return response_result
