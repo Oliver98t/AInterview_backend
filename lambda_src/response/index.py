@@ -9,10 +9,26 @@ import time
 import os
 import json
 import uuid
-from .response_types import DbRecord, ResponseResult
 from mypy_boto3_dynamodb import DynamoDBServiceResource
 from mypy_boto3_bedrock_runtime import BedrockRuntimeClient
 from boto3.dynamodb.conditions import Key
+from dataclasses import dataclass
+
+# types
+##################################################
+@dataclass
+class DbRecord:
+    user_name: str 
+    response: str 
+    job_id: str
+    role: str
+    session_id: str
+
+@dataclass
+class ResponseResult:
+    response: str
+    response_num: int
+##################################################
 
 import logging
 logger = logging.getLogger()
