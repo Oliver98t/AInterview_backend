@@ -144,7 +144,7 @@ def url_event(event) -> dict:
                 role=role,
                 session_id=session_id)
             write_to_db(db_record)
-            body = "db cleared"
+            body = json.dumps({"db_status": "cleared"})
         
         status_code = 200
     except Exception as e:
