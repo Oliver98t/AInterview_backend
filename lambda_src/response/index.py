@@ -145,9 +145,9 @@ def url_event(event) -> dict:
                 session_id=session_id)
             write_to_db(db_record)
         else:
-            #evaluate_repsonses(user_name=user_name)
+            evaluation = evaluate_repsonses(user_name=user_name)
             clear_db_by_user(user_name=user_name)    
-            body = json.dumps({"db_status": "cleared"})
+            body = json.dumps({"result": evaluation})
         
         status_code = 200
     except Exception as e:
@@ -312,4 +312,4 @@ def evaluate_repsonses(user_name: str):
                      "content": [{"text": prompt}]}
     )
     logger.info(response["output"]["message"]["content"][0]["text"])
-    return
+    return response["output"]["message"]["content"][0]["text"]
