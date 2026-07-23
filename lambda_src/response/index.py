@@ -304,6 +304,7 @@ def evaluate_repsonses(user_name: str):
     logger.info(f"message_history {len(messages)} {messages}")
 
     message_history_str = stringify_message_history(messages)
+    logger.info(message_history_str)
     prompt = f"Evaluate the responses from the user in this interview transcript: {message_history_str}"
     response = bedrock.converse(
         modelId=LLM,
@@ -311,3 +312,4 @@ def evaluate_repsonses(user_name: str):
                      "content": [{"text": prompt}]}
     )
     logger.info(response["output"]["message"]["content"][0]["text"])
+    return
