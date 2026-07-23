@@ -120,6 +120,7 @@ def url_event(event) -> dict:
         role = query_parameters.get("role")
         session_id = query_parameters.get("session_id")
         clear_db = query_parameters.get("clear_db")
+        eval = bool(query_parameters.get("eval"))
         logger.info(f"clear: {clear_db}")
         # generate an AI response for the provided transcript
         body = None
@@ -145,7 +146,8 @@ def url_event(event) -> dict:
                 session_id=session_id)
             write_to_db(db_record)
         else:
-            evaluation = evaluate_repsonses(user_name=user_name)
+            if eval:
+                evaluation = evaluate_repsonses(user_name=user_name)
             clear_db_by_user(user_name=user_name)    
             body = json.dumps({"result": evaluation})
         
