@@ -145,7 +145,7 @@ def url_event(event) -> dict:
                 session_id=session_id)
             write_to_db(db_record)
         else:
-            evaluate_repsonses(user_name=user_name)
+            #evaluate_repsonses(user_name=user_name)
             clear_db_by_user(user_name=user_name)    
             body = json.dumps({"db_status": "cleared"})
         
@@ -304,7 +304,7 @@ def evaluate_repsonses(user_name: str):
     logger.info(f"message_history {len(messages)} {messages}")
 
     message_history_str = stringify_message_history(messages)
-    prompt = f"Evaluate the responses form the user in this interview transcript: {message_history_str}"
+    prompt = f"Evaluate the responses from the user in this interview transcript: {message_history_str}"
     response = bedrock.converse(
         modelId=LLM,
         messages={"role": "user",
