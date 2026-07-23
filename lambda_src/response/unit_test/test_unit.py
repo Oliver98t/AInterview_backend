@@ -4,7 +4,7 @@ Tests cover the Bedrock response generation helper as well as the Lambda
 handler for both SQS-triggered and direct URL-invocation paths.
 """
 
-from lambda_src.response.index import generate_response, handler, create_message_history, read_db_by_user
+from lambda_src.response.index import generate_response, handler, create_message_history, stringify_message_history
 
 def test_generate_response():
     """Test that generate_response returns a non-empty string for any prompt."""
@@ -120,3 +120,9 @@ def test_create_message_history():
     print(message_history)
     #assert True == False
     assert type(message_history) == list
+
+test_message_history = [{'role': 'user', 'content': [{'text': 'begin the interview'}]}, {'role': 'assistant', 'content': [{'text': 'How would you optimize a Python script that processes a large CSV file without loading the entire file into memory?'}]}, {'role': 'user', 'content': [{'text': 'test'}]}, {'role': 'assistant', 'content': [{'text': 'How would you implement a context manager in Python to safely handle resource allocation and cleanup?'}]}, {'role': 'user', 'content': [{'text': 'test'}]}, {'role': 'assistant', 'content': [{'text': 'How would you use functools.lru_cache to memoize a function with mutable arguments?'}]}, {'role': 'user', 'content': [{'text': 'test'}]}, {'role': 'assistant', 'content': [{'text': 'How would you implement a custom exception class that automatically logs error details to a file?'}]}]
+def test_stringify_message_history():
+    output = stringify_message_history(test_message_history)
+    print(output)
+    assert str == type(output)

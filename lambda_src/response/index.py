@@ -35,6 +35,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 ddb_resource: DynamoDBServiceResource = boto3.resource('dynamodb')
+LLM = "global.amazon.nova-2-lite-v1:0"
 LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
 TABLENAME = os.environ.get('TABLE_NAME')
 
@@ -144,6 +145,7 @@ def url_event(event) -> dict:
                 session_id=session_id)
             write_to_db(db_record)
         else:
+            evaluate_repsonses(user_name=user_name)
             clear_db_by_user(user_name=user_name)    
             body = json.dumps({"db_status": "cleared"})
         
@@ -276,7 +278,7 @@ def generate_response(prompt: str, user_name: str) -> ResponseResult:
     #logger.info(f"messages {messages}")
     # send the transcript to the model and retrieve the generated text
     response = bedrock.converse(
-        modelId="global.amazon.nova-2-lite-v1:0",
+        modelId=LLM,
         system=[{"text": system_prompt}],
         messages=messages
     )
@@ -284,13 +286,28 @@ def generate_response(prompt: str, user_name: str) -> ResponseResult:
                                      response_num=response_num)
     return response_result
 
-# def evaluate_repsonses(user_name: str):
-#     # Bedrock currently only supports the client API in boto3, not resource API.
-#     bedrock: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")
+def stringify_message_history(message_history: list) -> str:
+    output = ""
+    for message in message_history:
+        output += f"{message.get('role')}: {message.get('content')[0].get('text')}\n"
+    return output
+
+def evaluate_repsonses(user_name: str):
+    # Bedrock currently only supports the client API in boto3, not resource API.
+    bedrock: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")
     
-#     history = read_db_by_user(user_name=user_name, clear_db=clear_db)
-#     response_num = len(history['Items'])
-#     logger.info(f"history {response_num} {history}")
+    history = read_db_by_user(user_name=user_name)
+    response_num = len(history['Items'])
+    logger.info(f"history {response_num} {history}")
     
-#     messages = create_message_history(history=history)
-#     logger.info(f"message_history {len(messages)} {messages}")
+    messages = create_message_history(history=history)
+    logger.info(f"message_history {len(messages)} {messages}")
+
+    message_history_str = stringify_message_history(messages)
+    prompt = f"Evaluate the responses form the user in this interview transcript: {message_history_str}"
+    response = bedrock.converse(
+        modelId=LLM,
+        messages={"role": "user",
+                     "content": [{"text": prompt}]}
+    )
+    logger.info(response["output"]["message"]["content"][0]["text"])
