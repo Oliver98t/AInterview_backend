@@ -9,7 +9,7 @@ from lambda_src.response.index import generate_response, handler, create_message
 def test_generate_response():
     """Test that generate_response returns a non-empty string for any prompt."""
     prompt: str = "this is a test prompt"
-    generate_response_result = generate_response(prompt=prompt, user_name="test", clear_db=False)
+    generate_response_result = generate_response(prompt=prompt, user_name="test")
     # the model should always return a string regardless of prompt content
     assert type(generate_response_result.response) == str
 

@@ -127,7 +127,6 @@ def url_event(event) -> dict:
             generate_response_result = generate_response(
                 prompt=message,
                 user_name=user_name,
-                clear_db=clear_db,
             )
             response = generate_response_result.response
             response_num = generate_response_result.response_num
@@ -144,7 +143,8 @@ def url_event(event) -> dict:
                 role=role,
                 session_id=session_id)
             write_to_db(db_record)
-        else:    
+        else:
+            clear_db_by_user(user_name=user_name)    
             body = json.dumps({"db_status": "cleared"})
         
         status_code = 200
@@ -157,7 +157,7 @@ def url_event(event) -> dict:
         'body': body
     }
 
-def read_db_by_user(user_name: str, clear_db: str):
+def read_db_by_user(user_name: str):
     response = None
     try:
         table = ddb_resource.Table(TABLENAME)
@@ -167,24 +167,36 @@ def read_db_by_user(user_name: str, clear_db: str):
             ScanIndexForward=False  # Descending order (newest first)
         )
 
-        if clear_db == "clear":
-            items = response.get("Items", [])
-            with table.batch_writer() as batch:
-                for item in items:
-                    batch.delete_item(
-                        Key={
-                            'user_name': item['user_name'],
-                            'timestamp': item['timestamp']
-                        }
-                    )
-            # After delete, return an empty history so the current prompt starts fresh.
-            response["Items"] = []
-
     except Exception as e:
         logger.error(f"Exception: {e}")
         response = {"Items": []}
     
     return response
+
+def clear_db_by_user(user_name: str):
+    try:
+        table = ddb_resource.Table(TABLENAME)
+        # Use query instead of scan, assuming user_name is the partition key and timestamp is the sort key
+        response = table.query(
+            KeyConditionExpression=Key('user_name').eq(user_name),
+            ScanIndexForward=False  # Descending order (newest first)
+        )
+
+        items = response.get("Items", [])
+        with table.batch_writer() as batch:
+            for item in items:
+                batch.delete_item(
+                    Key={
+                        'user_name': item['user_name'],
+                        'timestamp': item['timestamp']
+                    }
+                )
+
+    except Exception as e:
+        logger.error(f"Exception: {e}")
+
+    return
+        
 
 def write_to_db(data: DbRecord):
     """Persist the response data to DynamoDB.
@@ -231,7 +243,7 @@ def create_message_history(history: dict)-> list:
 
     return message_history
 
-def generate_response(prompt: str, user_name: str, clear_db: str) -> ResponseResult:
+def generate_response(prompt: str, user_name: str) -> ResponseResult:
     """Send a prompt to Amazon Bedrock and return the model's text response.
 
     Args:
@@ -243,7 +255,7 @@ def generate_response(prompt: str, user_name: str, clear_db: str) -> ResponseRes
     # Bedrock currently only supports the client API in boto3, not resource API.
     bedrock: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")
     
-    history = read_db_by_user(user_name=user_name, clear_db=clear_db)
+    history = read_db_by_user(user_name=user_name)
     response_num = len(history['Items'])
     logger.info(f"history {response_num} {history}")
     
@@ -271,3 +283,14 @@ def generate_response(prompt: str, user_name: str, clear_db: str) -> ResponseRes
     response_result = ResponseResult(response=response["output"]["message"]["content"][0]["text"],
                                      response_num=response_num)
     return response_result
+
+# def evaluate_repsonses(user_name: str):
+#     # Bedrock currently only supports the client API in boto3, not resource API.
+#     bedrock: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")
+    
+#     history = read_db_by_user(user_name=user_name, clear_db=clear_db)
+#     response_num = len(history['Items'])
+#     logger.info(f"history {response_num} {history}")
+    
+#     messages = create_message_history(history=history)
+#     logger.info(f"message_history {len(messages)} {messages}")
