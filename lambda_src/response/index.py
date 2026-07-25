@@ -121,7 +121,7 @@ def url_event(event) -> dict:
         session_id = query_parameters.get("session_id")
         clear_db = query_parameters.get("clear_db")
         eval = bool(query_parameters.get("eval"))
-        logger.info(f"clear: {clear_db}")
+        logger.info(f"eval: {eval}")
         # generate an AI response for the provided transcript
         body = None
         response = None
@@ -310,8 +310,8 @@ def evaluate_repsonses(user_name: str):
     prompt = f"Evaluate the responses from the user in this interview transcript: {message_history_str}"
     response = bedrock.converse(
         modelId=LLM,
-        messages={"role": "user",
-                     "content": [{"text": prompt}]}
+        messages=[{"role": "user",
+                   "content": [{"text": prompt}]}]
     )
     logger.info(response["output"]["message"]["content"][0]["text"])
     return response["output"]["message"]["content"][0]["text"]
