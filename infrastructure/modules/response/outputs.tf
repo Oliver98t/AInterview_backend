@@ -20,8 +20,8 @@ output "lambda_role_name" {
     value       = aws_iam_role.lambda_func_iam_role.name
 }
 
-# Lambda Function URL Output
+# API Gateway URL Output
 output "lambda_function_url" {
-    description = "The HTTP(S) URL endpoint for the Lambda function"
-    value       = aws_lambda_function_url.lambda_func_url.function_url
+    description = "The HTTP(S) URL endpoint for the API Gateway"
+    value       = aws_apigatewayv2_stage.default.invoke_url
 }
