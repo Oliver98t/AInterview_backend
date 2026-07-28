@@ -147,8 +147,9 @@ def url_event(event) -> dict:
         else:
             if eval:
                 evaluation = evaluate_repsonses(user_name=user_name)
+                body = json.dumps({"result": evaluation})
             clear_db_by_user(user_name=user_name)    
-            body = json.dumps({"result": evaluation})
+            
         
         status_code = 200
     except Exception as e:
