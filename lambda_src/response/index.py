@@ -40,8 +40,7 @@ LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
 TABLENAME = os.environ.get('TABLE_NAME')
 
 CHAT_WINDOW = 10
-# TODO add evaluation stage
-# TODO delete chat history when opening up new session
+
 def handler(event, context):
     """Lambda entry point. Routes to the correct handler based on the event source.
 
