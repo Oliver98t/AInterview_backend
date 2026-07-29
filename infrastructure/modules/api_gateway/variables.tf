@@ -14,6 +14,7 @@ variable "environment" {
     type        = string
 }
 
+# TODO make list of variables to feed into 
 variable "lambda_invoke_arn" {
     description = "lambda invoke arn"
     type        = string

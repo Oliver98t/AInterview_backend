@@ -1,4 +1,4 @@
-# TODO add API gateway + cognito
+# TODO cognito
 module "speech_to_text_lambda_function"  {
   source = "./modules/speech_to_text"
 

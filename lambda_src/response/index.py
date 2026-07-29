@@ -112,8 +112,15 @@ def url_event(event) -> dict:
     """
     # Handle a direct HTTP invocation via URL function URL or API Gateway
     try:
-        query_parameters = json.loads(event.get('body'))
+        query_parameters: dict = json.loads(event.get('body'))
         job_id = str(uuid.uuid4())
+        function_status = query_parameters.get('status')
+        logger.info(f"status: {function_status}")
+        if function_status:
+            return {
+                'statusCode': 200,
+                'status': "up"
+            }
         user_name = query_parameters.get("user_name")
         message = query_parameters.get("message")
         role = query_parameters.get("role")
