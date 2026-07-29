@@ -20,8 +20,7 @@ output "lambda_role_name" {
     value       = aws_iam_role.lambda_func_iam_role.name
 }
 
-# API Gateway URL Output
-output "lambda_function_url" {
-    description = "The HTTP(S) URL endpoint for the API Gateway"
-    value       = aws_apigatewayv2_stage.default.invoke_url
+output "lambda_function_invoke_arn" {
+    description = "The name of the Lambda execution IAM role"
+    value       = aws_lambda_function.lambda_func.invoke_arn
 }

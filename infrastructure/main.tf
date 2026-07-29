@@ -53,3 +53,14 @@ module "get_response_lambda_function" {
     dynamodb_table_name         = module.storage.dynamodb_table_name
     local_test                  = var.local_test
 }
+
+module "api_gateway"  {
+  source = "./modules/api_gateway"
+
+  aws_region = var.aws_region
+  application_name = var.application_name
+  environment = var.environment
+  lambda_invoke_arn = module.response_lambda_function.lambda_function_arn
+  lambda_function_name = module.response_lambda_function.lambda_function_name
+
+}
