@@ -47,24 +47,26 @@ sqs_event_test_data = {
 
 url_call_event_test_data = {
     "version": "2.0",
-    "routeKey": "$default",
-    "rawPath": "/",
+    "routeKey": "POST /response",
+    "rawPath": "/response",
     "rawQueryString": "",
     "headers": {
-        "x-amzn-tls-version": "TLSv1.3",
-        "x-amz-date": "REDACTED_DATE",
-        "x-forwarded-proto": "https",
-        "postman-token": "REDACTED_TOKEN",
-        "x-forwarded-port": "443",
-        "x-forwarded-for": "REDACTED_IP",
         "accept": "*/*",
-        "x-amzn-tls-cipher-suite": "TLS_AES_128_GCM_SHA256",
-        "x-amzn-trace-id": "Root=REDACTED_TRACE_ID",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "en-GB,en;q=0.9",
+        "authorization": "AWS4-HMAC-SHA256 Credential=REDACTED/20260728/eu-west-2/execute-api/aws4_request, SignedHeaders=host;x-amz-date, Signature=REDACTED",
+        "content-length": "88",
+        "content-type": "application/json",
         "host": "REDACTED_HOST",
-        "accept-encoding": "gzip, deflate, br",
-        "user-agent": "PostmanRuntime/7.53.0"
+        "origin": "http://localhost:5173",
+        "referer": "http://localhost:5173/",
+        "x-amz-date": "REDACTED_DATE",
+        "x-amzn-trace-id": "Root=REDACTED_TRACE_ID",
+        "x-forwarded-for": "REDACTED_IP",
+        "x-forwarded-port": "443",
+        "x-forwarded-proto": "https",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0"
     },
-    "queryStringParameters": {"user": "test", "transcript": "this is a test"},
     "requestContext": {
         "accountId": "REDACTED_ACCOUNT_ID",
         "apiId": "REDACTED_API_ID",
@@ -82,18 +84,19 @@ url_call_event_test_data = {
         "domainName": "REDACTED_DOMAIN",
         "domainPrefix": "REDACTED_PREFIX",
         "http": {
-            "method": "GET",
-            "path": "/",
+            "method": "POST",
+            "path": "/response",
             "protocol": "HTTP/1.1",
             "sourceIp": "REDACTED_IP",
-            "userAgent": "PostmanRuntime/7.53.0"
+            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0"
         },
         "requestId": "REDACTED_REQUEST_ID",
-        "routeKey": "$default",
+        "routeKey": "POST /response",
         "stage": "$default",
         "time": "REDACTED_TIME",
-        "timeEpoch": 1777797960506
+        "timeEpoch": 1785262292704
     },
+    "body": '{"user_name":"test","message":"null","role":"assistant","clear_db":"clear","eval":false}',
     "isBase64Encoded": False
 }
 

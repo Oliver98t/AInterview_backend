@@ -112,8 +112,18 @@ def url_event(event) -> dict:
     """
     # Handle a direct HTTP invocation via URL function URL or API Gateway
     try:
-        query_parameters: dict = event.get('queryStringParameters')
+        query_parameters: dict = json.loads(event.get('body'))
         job_id = str(uuid.uuid4())
+
+        # health status of lambda
+        function_status = query_parameters.get('status')
+        logger.info(f"status: {function_status}")
+        if function_status:
+            return {
+                'statusCode': 200,
+                'body': json.dumps({'status': 'true'})
+            }
+        
         user_name = query_parameters.get("user_name")
         message = query_parameters.get("message")
         role = query_parameters.get("role")
@@ -147,8 +157,9 @@ def url_event(event) -> dict:
         else:
             if eval:
                 evaluation = evaluate_repsonses(user_name=user_name)
+                body = json.dumps({"result": evaluation})
             clear_db_by_user(user_name=user_name)    
-            body = json.dumps({"result": evaluation})
+            
         
         status_code = 200
     except Exception as e:

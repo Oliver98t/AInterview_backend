@@ -1,16 +1,4 @@
-# TODO add API gateway + cognito
-module "speech_to_text_lambda_function"  {
-  source = "./modules/speech_to_text"
-
-  aws_region                = var.aws_region
-  lambda_function_name      = "speech_to_text"
-  environment               = var.environment
-  application_name          = var.application_name
-  lambda_function_image_uri = var.speech_to_text_image_uri
-  queue_url                 = module.lambda_queue.queue_url
-  queue_arn                 = module.lambda_queue.queue_arn
-  local_test                = var.local_test
-}
+# TODO cognito
 
 module "lambda_queue"  {
   source = "./modules/queue"
@@ -25,6 +13,19 @@ module "storage" {
     aws_region = var.aws_region
     environment = var.environment
     application_name = var.application_name
+}
+
+module "speech_to_text_lambda_function"  {
+  source = "./modules/speech_to_text"
+
+  aws_region                = var.aws_region
+  lambda_function_name      = "speech_to_text"
+  environment               = var.environment
+  application_name          = var.application_name
+  lambda_function_image_uri = var.speech_to_text_image_uri
+  queue_url                 = module.lambda_queue.queue_url
+  queue_arn                 = module.lambda_queue.queue_arn
+  local_test                = var.local_test
 }
 
 module "response_lambda_function"  {
@@ -52,4 +53,15 @@ module "get_response_lambda_function" {
     dynamodb_table_arn          = module.storage.dynamodb_table_arn
     dynamodb_table_name         = module.storage.dynamodb_table_name
     local_test                  = var.local_test
+}
+
+module "api_gateway"  {
+  source = "./modules/api_gateway"
+
+  aws_region = var.aws_region
+  application_name = var.application_name
+  environment = var.environment
+  lambda_invoke_arn = module.response_lambda_function.lambda_function_arn
+  lambda_function_name = module.response_lambda_function.lambda_function_name
+
 }
