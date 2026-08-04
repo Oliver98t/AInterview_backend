@@ -24,3 +24,15 @@ variable "lambda_function_name" {
     description = "lambda invoke arn"
     type        = string
 }
+
+variable "callback_urls" {
+    description = "List of callback URLs for OAuth"
+    type        = list(string)
+    default     = ["http://localhost:3000/callback"]
+}
+
+variable "logout_urls" {
+    description = "List of logout URLs for OAuth"
+    type        = list(string)
+    default     = ["http://localhost:3000/logout"]
+}
