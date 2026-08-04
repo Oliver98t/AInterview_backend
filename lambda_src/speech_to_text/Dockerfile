@@ -2,7 +2,7 @@
 FROM public.ecr.aws/lambda/python:3.12
 
 # import ca certificates
-COPY ZscalerRootCertificate-2048-SHA256.crt /etc/pki/ca-trust/source/anchors/ZscalerRootCertificate-2048-SHA256.crt
+#COPY ZscalerRootCertificate-2048-SHA256.crt /etc/pki/ca-trust/source/anchors/ZscalerRootCertificate-2048-SHA256.crt
 RUN update-ca-trust extract
 
 # Copy function code and requirements to $LAMBDA_TASK_ROOT
