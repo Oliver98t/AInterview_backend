@@ -44,28 +44,28 @@ def get_lambda_function_url(function_name: str, region: str = "eu-west-2") -> st
     return result.stdout.strip()
 
 # TODO update intgeration test
-# def test_speech_to_text():
-#     """Integration test: invoke the deployed speech_to_text Lambda and verify a 200 response.
+def test_speech_to_text():
+    """Integration test: invoke the deployed speech_to_text Lambda and verify a 200 response.
 
-#     Signs the request with AWS SigV4 credentials read from the environment,
-#     then calls the function URL with a 'user=test' query parameter.
-#     """
-#     # read AWS credentials from the environment
-#     access_key = os.environ["AWS_ACCESS_KEY_ID"]
-#     secret_key = os.environ["AWS_SECRET_ACCESS_KEY"]
-#     region = "eu-west-2"
-#     service = "lambda"
+    Signs the request with AWS SigV4 credentials read from the environment,
+    then calls the function URL with a 'user=test' query parameter.
+    """
+    # # read AWS credentials from the environment
+    # access_key = os.environ["AWS_ACCESS_KEY_ID"]
+    # secret_key = os.environ["AWS_SECRET_ACCESS_KEY"]
+    # region = "eu-west-2"
+    # service = "lambda"
 
-#     # build SigV4 auth for the Lambda function URL
-#     auth = AWS4Auth(
-#         access_key,
-#         secret_key,
-#         region,
-#         service,
-#     )
+    # # build SigV4 auth for the Lambda function URL
+    # auth = AWS4Auth(
+    #     access_key,
+    #     secret_key,
+    #     region,
+    #     service,
+    # )
 
-#     # resolve the live function URL and invoke it
-#     url = get_lambda_function_url("speech_to_text_dev")
-#     params = {"user": "test"}
-#     response = requests.get(url, params=params, auth=auth)
-#     assert response.status_code == 200
+    # # resolve the live function URL and invoke it
+    # url = get_lambda_function_url("speech_to_text_dev")
+    # params = {"user": "test"}
+    # response = requests.get(url, params=params, auth=auth)
+    # assert response.status_code == 200
