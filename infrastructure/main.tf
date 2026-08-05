@@ -1,5 +1,3 @@
-# TODO cognito
-
 module "lambda_queue"  {
   source = "./modules/queue"
 
@@ -63,5 +61,6 @@ module "api_gateway"  {
   environment = var.environment
   lambda_invoke_arn = module.response_lambda_function.lambda_function_arn
   lambda_function_name = module.response_lambda_function.lambda_function_name
-
+  callback_urls = ["${var.fe_base_url}/callback"]
+  logout_urls = ["${var.fe_base_url}/logout"]
 }

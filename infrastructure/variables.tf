@@ -34,3 +34,9 @@ variable "get_response_image_uri" {
 	description = "Name of the application"
 	type        = string
 }
+
+variable "fe_base_url" {
+    description = "List of callback URLs for OAuth"
+    type        = string
+    default     = "https://d23pnzn94c8qm1.cloudfront.net"
+}
