@@ -13,7 +13,7 @@ fi
 
 # backend config
 BUCKET=ainterview-state-files   
-KEY=state/terraform_$env.tfstate      
+KEY=state/terraform_BE_$env.tfstate      
 REGION=eu-west-2                     
 ENCRYPT=true
 
