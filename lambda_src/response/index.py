@@ -317,7 +317,8 @@ def evaluate_repsonses(user_name: str):
 
     message_history_str = stringify_message_history(messages)
     logger.info(message_history_str)
-    prompt = f"Evaluate the responses from the user to the assistants questions in this interview transcript: {message_history_str}"
+    output_format = "store the result in a json object in the form { question_num: {expected: , evaluation:}, overall_evaluation }"
+    prompt = f"Evaluate the responses from the user to the assistants questions in this interview transcript: {message_history_str}\n{output_format}"
     response = bedrock.converse(
         modelId=LLM,
         messages=[{"role": "user",
