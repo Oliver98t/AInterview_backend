@@ -18,12 +18,11 @@ REGION=eu-west-2
 ENCRYPT=true
 
 account_id=$(aws sts get-caller-identity --query "Account" --output text)
-region="eu-west-2"
 local_test=true
-registry_url="$account_id.dkr.ecr.$region.amazonaws.com"
+registry_url="$account_id.dkr.ecr.$REGION.amazonaws.com"
 commit=$(git rev-parse --short HEAD)
 
-aws ecr get-login-password --region eu-west-2 | docker login --username AWS \
+aws ecr get-login-password --region "$REGION" | docker login --username AWS \
 --password-stdin $registry_url
 build_tag_push()
 {
@@ -55,7 +54,7 @@ if [ "$auto" = "auto-yes" ]; then
         -var="get_response_image_uri=$get_response_image_uri" \
         -var="response_image_uri=$response_image_uri" \
         -var="speech_to_text_image_uri=$speechtotext_image_uri" \
-        -var="aws_region=$region" \
+        -var="aws_region=$REGION" \
         -var="local_test=$local_test" 
 else
     terraform apply \
@@ -63,7 +62,7 @@ else
         -var="get_response_image_uri=$get_response_image_uri" \
         -var="response_image_uri=$response_image_uri" \
         -var="speech_to_text_image_uri=$speechtotext_image_uri" \
-        -var="aws_region=$region" \
+        -var="aws_region=$REGION" \
         -var="local_test=$local_test" 
 fi
 cd ..

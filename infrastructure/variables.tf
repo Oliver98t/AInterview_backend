@@ -38,5 +38,5 @@ variable "get_response_image_uri" {
 variable "fe_base_url" {
     description = "List of callback URLs for OAuth"
     type        = string
-    default     = "https://d23pnzn94c8qm1.cloudfront.net"
+    default     = "https://d2qald9k8s5foq.cloudfront.net"
 }
