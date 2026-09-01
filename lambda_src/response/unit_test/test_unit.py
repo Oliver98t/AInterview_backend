@@ -4,7 +4,7 @@ Tests cover the Bedrock response generation helper as well as the Lambda
 handler for both SQS-triggered and direct URL-invocation paths.
 """
 
-from lambda_src.response.index import generate_response, handler, create_message_history, stringify_message_history
+from lambda_src.response.index import generate_response, handler, create_message_history, stringify_message_history, build_output_format
 
 def test_generate_response():
     """Test that generate_response returns a non-empty string for any prompt."""
@@ -129,3 +129,7 @@ def test_stringify_message_history():
     output = stringify_message_history(test_message_history)
     print(output)
     assert str == type(output)
+
+def test_build_output_format():
+    output = build_output_format(5)
+    print(output)

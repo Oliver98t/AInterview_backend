@@ -304,6 +304,16 @@ def stringify_message_history(message_history: list) -> str:
         output += f"{message.get('role')}: {message.get('content')[0].get('text')}\n"
     return output
 
+def build_output_format(question_num: int) -> str:
+    question_format = "store the result in a json object in the exact form of { "
+    for i in range(question_num):
+        question_format += f"question_{i+1}: "
+        question_format += "{ expected_answer: , score: }, "
+
+    question_format += "overall_evaluation: {comment: , score: } } only output ths json object and nothing else"
+    return question_format 
+
+
 def evaluate_repsonses(user_name: str):
     # Bedrock currently only supports the client API in boto3, not resource API.
     bedrock: BedrockRuntimeClient = boto3.client("bedrock-runtime", region_name="eu-west-2")
@@ -317,8 +327,11 @@ def evaluate_repsonses(user_name: str):
 
     message_history_str = stringify_message_history(messages)
     logger.info(message_history_str)
-    output_format = "store the result in a json object in the exact form of { question_num: {expected_answer: , score:}, overall_evaluation: {comment: , score: } } only output ths json object and nothing else"
-    prompt = f"Evaluate the responses from the user to the assistants questions in this interview transcript: {message_history_str}\n{output_format}"
+
+    #TODO correct json output
+    output_format = build_output_format(5)
+    prompt = f"Evaluate the responses from the user to the assistants questions in this interview transcript: {message_history_str}\n \
+    {output_format}"
     response = bedrock.converse(
         modelId=LLM,
         messages=[{"role": "user",
