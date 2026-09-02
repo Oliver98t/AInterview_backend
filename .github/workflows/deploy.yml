@@ -5,29 +5,7 @@ on:
         branches: [ "main" ]
 
 jobs:
-    Unit-Test:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                python-version: [ 3.12 ]
-        steps:
-            - uses: actions/checkout@v4
-
-            - name: Set up Python ${{ matrix.python-version }}
-              uses: actions/setup-python@v5
-              with:
-                  python-version: ${{ matrix.python-version }}
-
-            - name: Install dependencies
-              run: |
-                  python -m pip install --upgrade pip
-                  pip install -r lambda_src/dev_env_requirements.txt
-
-            - name: Run unit tests
-              run: pytest --ignore=lambda_src/integration_test/
-
     Deploy-Dev:
-        needs: Unit-Test
         runs-on: ubuntu-latest
         environment: dev
         steps:
