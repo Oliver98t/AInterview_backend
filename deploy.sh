@@ -18,6 +18,7 @@ REGION=eu-west-2
 ENCRYPT=true
 
 account_id=$(aws sts get-caller-identity --query "Account" --output text)
+fe_url=$(aws cloudfront list-distributions --query "DistributionList.Items[?contains(Origins.Items[0].DomainName, 'dev')].DomainName" --output text)
 local_test=true
 registry_url="$account_id.dkr.ecr.$REGION.amazonaws.com"
 commit=$(git rev-parse --short HEAD)
@@ -55,7 +56,8 @@ if [ "$auto" = "auto-yes" ]; then
         -var="response_image_uri=$response_image_uri" \
         -var="speech_to_text_image_uri=$speechtotext_image_uri" \
         -var="aws_region=$REGION" \
-        -var="local_test=$local_test" 
+        -var="local_test=$local_test" \
+        -var="fe_base_url=$fe_url" 
 else
     terraform apply \
         -var="environment=$env" \
@@ -63,6 +65,7 @@ else
         -var="response_image_uri=$response_image_uri" \
         -var="speech_to_text_image_uri=$speechtotext_image_uri" \
         -var="aws_region=$REGION" \
-        -var="local_test=$local_test" 
+        -var="local_test=$local_test" \
+        -var="fe_base_url=$fe_url" 
 fi
 cd ..
