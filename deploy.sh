@@ -57,7 +57,7 @@ if [ "$auto" = "auto-yes" ]; then
         -var="speech_to_text_image_uri=$speechtotext_image_uri" \
         -var="aws_region=$REGION" \
         -var="local_test=$local_test" \
-        -var="fe_base_url=$fe_url" 
+        -var="fe_base_url=https://$fe_url" 
 else
     terraform apply \
         -var="environment=$env" \
