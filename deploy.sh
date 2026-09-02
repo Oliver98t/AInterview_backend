@@ -18,7 +18,7 @@ REGION=eu-west-2
 ENCRYPT=true
 
 account_id=$(aws sts get-caller-identity --query "Account" --output text)
-fe_url=$(aws cloudfront list-distributions --query "DistributionList.Items[?contains(Origins.Items[0].DomainName, 'dev')].DomainName" --output text)
+fe_url=$(aws cloudfront list-distributions --query "DistributionList.Items[?contains(Origins.Items[0].DomainName, '$env')].DomainName" --output text)
 local_test=true
 registry_url="$account_id.dkr.ecr.$REGION.amazonaws.com"
 commit=$(git rev-parse --short HEAD)
