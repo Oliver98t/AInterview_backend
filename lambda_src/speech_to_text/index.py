@@ -15,9 +15,9 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # set up boto3 sdk
-transcribe = boto3.client('transcribe')
-s3 = boto3.client('s3')
-sqs: SQSClient = boto3.client('sqs')
+transcribe = boto3.client('transcribe', region_name="eu-west-2")
+s3 = boto3.client('s3', region_name="eu-west-2")
+sqs: SQSClient = boto3.client('sqs', region_name="eu-west-2")
 
 # set up env variables
 LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
