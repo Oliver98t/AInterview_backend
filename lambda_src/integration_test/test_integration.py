@@ -15,28 +15,40 @@ import subprocess
 import boto3
 
 def get_lambda_function_url(function_name: str) -> str:
-    """Retrieve the function URL for a deployed Lambda using the AWS CLI.
+    """Retrieve the deployed endpoint URL using the AWS CLI.
 
     Args:
         function_name: The name of the Lambda function.
-        region: The AWS region the function is deployed in.
 
     Returns:
-        The HTTPS function URL as a string.
+        The HTTPS endpoint URL as a string.
     """
+    region = os.environ.get("AWS_REGION", "eu-west-2")
+    environment = os.environ.get("ENVIRONMENT", "dev")
+
+    api_name = f"AInterview_{environment}_api"
     result = subprocess.run(
         [
-            "terraform",
-            "-chdir=infrastructure",
-            "output",
-            "-raw",
-            f"{function_name}_lambda_function_url"
+            "aws",
+            "apigatewayv2",
+            "get-apis",
+            "--region",
+            region,
+            "--query",
+            f"Items[?Name=='{api_name}'].ApiEndpoint | [0]",
+            "--output",
+            "text",
         ],
         capture_output=True,
         text=True,
         check=True,
     )
-    return result.stdout.strip()
+    print(result)
+    endpoint_url = result.stdout.strip().rstrip("/")
+    if not endpoint_url or endpoint_url == "None":
+        raise RuntimeError(f"Could not find endpoint URL for {function_name}")
+
+    return endpoint_url
 
 def send_response(
         response_url: str,
@@ -76,7 +88,7 @@ def test_response():
             "PASSWORD": os.environ['TEST_PASSWORD'],
         },
     )
-
+    
     AccessToken = response['AuthenticationResult']['AccessToken']
     response = send_response(
         response_url=f"{get_lambda_function_url("response")}/response",

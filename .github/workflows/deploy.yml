@@ -29,16 +29,13 @@ jobs:
             TEST_ACCOUNT: ${{ secrets.TEST_ACCOUNT }}
             TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
             AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-        strategy:
-            matrix:
-                python-version: [ 3.12 ]
         steps:
             - uses: actions/checkout@v4
 
-            - name: Set up Python ${{ matrix.python-version }}
+            - name: Set up Python
               uses: actions/setup-python@v5
               with:
-                  python-version: ${{ matrix.python-version }}
+                  python-version: "3.12"
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
@@ -56,7 +53,7 @@ jobs:
               run: pytest lambda_src/integration_test/
 
     Deploy-Prod:
-        #needs: Integration-Test
+        needs: Integration-Test
         runs-on: ubuntu-latest
         environment: prod
         steps:
