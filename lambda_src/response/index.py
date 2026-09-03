@@ -34,7 +34,7 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-ddb_resource: DynamoDBServiceResource = boto3.resource('dynamodb')
+ddb_resource: DynamoDBServiceResource = boto3.resource('dynamodb', region_name="eu-west-2")
 LLM = "global.amazon.nova-2-lite-v1:0"
 LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
 TABLENAME = os.environ.get('TABLE_NAME')
