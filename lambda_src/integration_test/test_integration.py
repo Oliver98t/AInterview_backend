@@ -14,7 +14,7 @@ from requests_aws4auth import AWS4Auth
 import subprocess
 import boto3
 
-def get_lambda_function_url(function_name: str, region: str = "eu-west-2") -> str:
+def get_lambda_function_url(function_name: str) -> str:
     """Retrieve the function URL for a deployed Lambda using the AWS CLI.
 
     Args:
@@ -30,7 +30,7 @@ def get_lambda_function_url(function_name: str, region: str = "eu-west-2") -> st
             "-chdir=infrastructure",
             "output",
             "-raw",
-            "response_lambda_function_url"
+            f"{function_name}_lambda_function_url"
         ],
         capture_output=True,
         text=True,
@@ -79,7 +79,7 @@ def test_response():
 
     AccessToken = response['AuthenticationResult']['AccessToken']
     response = send_response(
-        response_url=f"{get_lambda_function_url("response_dev")}/response",
+        response_url=f"{get_lambda_function_url("response")}/response",
         user="test",
         message="test message",
         role="user",

@@ -19,41 +19,41 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: ${{ vars.AWS_REGION }}
 
-    # Integration-Test:
-    #     needs: Deploy-Dev
-    #     runs-on: ubuntu-latest
-    #     environment: dev
-    #     env:
-    #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #         TEST_ACCOUNT: ${{ secrets.TEST_ACCOUNT }}
-    #         TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-    #         AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-    #     strategy:
-    #         matrix:
-    #             python-version: [ 3.12 ]
-    #     steps:
-    #         - uses: actions/checkout@v4
+    Integration-Test:
+        needs: Deploy-Dev
+        runs-on: ubuntu-latest
+        environment: dev
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            TEST_ACCOUNT: ${{ secrets.TEST_ACCOUNT }}
+            TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+            AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+        strategy:
+            matrix:
+                python-version: [ 3.12 ]
+        steps:
+            - uses: actions/checkout@v4
 
-    #         - name: Set up Python ${{ matrix.python-version }}
-    #           uses: actions/setup-python@v5
-    #           with:
-    #               python-version: ${{ matrix.python-version }}
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ matrix.python-version }}
 
-    #         - name: Configure AWS credentials
-    #           uses: aws-actions/configure-aws-credentials@v4
-    #           with:
-    #               aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #               aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #               aws-region: ${{ vars.AWS_REGION }}
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ vars.AWS_REGION }}
 
-    #         - name: Install dependencies
-    #           run: |
-    #               python -m pip install --upgrade pip
-    #               pip install -r lambda_src/dev_env_requirements.txt
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -r lambda_src/dev_env_requirements.txt
 
-    #         - name: Integration test
-    #           run: pytest lambda_src/integration_test/
+            - name: Integration test
+              run: pytest lambda_src/integration_test/
 
     Deploy-Prod:
         #needs: Integration-Test
