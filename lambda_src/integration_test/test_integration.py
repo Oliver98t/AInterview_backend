@@ -58,6 +58,24 @@ def send_response(
         clear: str, 
         evaluate: bool, 
         access_token: str) -> dict:
+    """Send a transcript message to the deployed response endpoint.
+
+    Args:
+        response_url: The endpoint URL that receives the transcript.
+        user: The username associated with the transcript.
+        message: The transcript message to send.
+        role: The message role, either ``user`` or ``assistant``.
+        clear: Whether the endpoint should clear the existing database.
+        evaluate: Whether the endpoint should evaluate the response.
+        access_token: The bearer token used to authenticate the request.
+
+    Returns:
+        The decoded JSON response from the endpoint.
+
+    Raises:
+        ValueError: If ``role`` is not ``user`` or ``assistant``.
+        RuntimeError: If the endpoint returns an unsuccessful status code.
+    """
     if role not in ("user", "assistant"):
         raise ValueError(f"Invalid role: {role}")
 
@@ -78,6 +96,7 @@ def send_response(
     return res.json()
 
 def test_response():
+    """Authenticate a test account and send a sample response message."""
     client = boto3.client("cognito-idp", region_name="eu-west-2")
     
     response = client.initiate_auth(
