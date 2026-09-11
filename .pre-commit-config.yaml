@@ -5,21 +5,21 @@ repos:
     hooks:
       - id: ruff-check
         name: Ruff lint
-        entry: .venv/bin/python -m ruff check lambda_src/response
+        entry: .venv/bin/python -m ruff check lambda_src/
         language: system
         pass_filenames: false
         stages: [pre-commit]
 
       - id: ruff-format
         name: Ruff format check
-        entry: .venv/bin/python -m ruff format lambda_src/response
+        entry: .venv/bin/python -m ruff format lambda_src/
         language: system
         pass_filenames: false
         stages: [pre-commit]
 
       - id: mypy
         name: Mypy type check
-        entry: .venv/bin/python -m mypy lambda_src/response
+        entry: .venv/bin/python -m mypy lambda_src/
         language: system
         pass_filenames: false
         stages: [pre-commit]
