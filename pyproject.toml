@@ -1,0 +1,6 @@
+[tool.ruff.lint]
+extend-select = ["N", "C901"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+

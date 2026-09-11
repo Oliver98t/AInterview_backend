@@ -4,9 +4,6 @@ These tests call AWS Transcribe and require valid AWS credentials and a
 pre-uploaded test audio file at s3://ainterviewupload/uploads/test.flac.
 """
 
-import lambda_src.speech_to_text.index as stt
-from lambda_src.speech_to_text.index import Transcribe, handler
-import json
 # TODO update tests
 
 # def test_transcribe():

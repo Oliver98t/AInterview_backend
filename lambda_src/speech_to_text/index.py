@@ -4,29 +4,32 @@
 # transcript to an SQS queue for downstream processing.
 
 import json
-import boto3
-import os
-from mypy_boto3_sqs import SQSClient
-import uuid
 
 # set up logging
 import logging
+import os
+import uuid
+
+import boto3
+from mypy_boto3_sqs import SQSClient
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # set up boto3 sdk
-transcribe = boto3.client('transcribe', region_name="eu-west-2")
-s3 = boto3.client('s3', region_name="eu-west-2")
-sqs: SQSClient = boto3.client('sqs', region_name="eu-west-2")
+transcribe = boto3.client("transcribe", region_name="eu-west-2")
+s3 = boto3.client("s3", region_name="eu-west-2")
+sqs: SQSClient = boto3.client("sqs", region_name="eu-west-2")
 
 # set up env variables
-LOCAL_TEST = os.environ.get('LOCAL_TEST', None)
-S3_BUCKET = os.environ.get('S3_BUCKET', None)
-QUEUE_URL = os.environ.get('SQS_QUEUE_URL')
+LOCAL_TEST = os.environ.get("LOCAL_TEST", None)
+S3_BUCKET = os.environ.get("S3_BUCKET", "")
+QUEUE_URL = os.environ.get("SQS_QUEUE_URL", "")
 
-#TODO modify to be triggered by a flac file upload to bucket 
+# TODO modify to be triggered by a flac file upload to bucket
 
-def handler(event: dict, context):
+
+def handler(event: dict, context: object) -> dict:
     """Lambda entry point. Transcribes the user's audio file and publishes the result to SQS.
 
     Args:
@@ -40,10 +43,10 @@ def handler(event: dict, context):
     logger.info(f"LOCAL_TEST: {LOCAL_TEST}")
     logger.info(f"S3_BUCKET: {S3_BUCKET}")
     logger.info(f"Event: {event}")
-    
+
     # extract the user identifier from the query string
-    query_parameters: dict = event.get('queryStringParameters')
-    user = query_parameters.get("user")
+    query_parameters: dict = event.get("queryStringParameters") or {}
+    user = str(query_parameters.get("user"))
     # transcribe the user's audio file stored in S3
     transcribe = Transcribe(bucket=S3_BUCKET, user=user)
     transcription = transcribe.transcribe()
@@ -53,21 +56,19 @@ def handler(event: dict, context):
     if LOCAL_TEST != None:
         sqs.send_message(
             QueueUrl=QUEUE_URL,
-            MessageBody=json.dumps({
-                "jobId": job_id,
-                "user": user,
-                "transcription": transcription}))
-        
+            MessageBody=json.dumps(
+                {"jobId": job_id, "user": user, "transcription": transcription}
+            ),
+        )
+
     return {
-        'statusCode': 200,
-        'body': json.dumps({
-            "jobId": job_id,
-            "transcription": transcription})
+        "statusCode": 200,
+        "body": json.dumps({"jobId": job_id, "transcription": transcription}),
     }
 
 
 class Transcribe:
-    def __init__(self, bucket, user):
+    def __init__(self, bucket: str, user: str) -> None:
         """Initialise a Transcribe job for the given user's audio file.
 
         Args:
@@ -90,11 +91,11 @@ class Transcribe:
         # submit the audio file to AWS Transcribe and return the job name
         transcribe.start_transcription_job(
             TranscriptionJobName=job_name,
-            Media={'MediaFileUri': f"s3://{self.bucket}/{self.key}"},
-            MediaFormat='flac',
-            LanguageCode='en-GB',
+            Media={"MediaFileUri": f"s3://{self.bucket}/{self.key}"},
+            MediaFormat="flac",
+            LanguageCode="en-GB",
             OutputBucketName=self.bucket,
-            OutputKey=f"transcripts/{job_name}.json"
+            OutputKey=f"transcripts/{job_name}.json",
         )
 
         return job_name
@@ -103,22 +104,22 @@ class Transcribe:
         """Poll until the job completes and return the transcript text."""
         while True:
             response = transcribe.get_transcription_job(TranscriptionJobName=job_name)
-            job = response['TranscriptionJob']
-            status = job['TranscriptionJobStatus']
+            job = response["TranscriptionJob"]
+            status = job["TranscriptionJobStatus"]
 
-            if status == 'COMPLETED':
+            if status == "COMPLETED":
                 # parse the S3 URI to locate the output transcript file
-                bucket = job['Transcript']['TranscriptFileUri'].split('/')[3]
-                s3_key = '/'.join(job['Transcript']['TranscriptFileUri'].split('/')[4:])
+                bucket = job["Transcript"]["TranscriptFileUri"].split("/")[3]
+                s3_key = "/".join(job["Transcript"]["TranscriptFileUri"].split("/")[4:])
                 obj = s3.get_object(Bucket=bucket, Key=s3_key)
-                transcript_data = json.loads(obj['Body'].read().decode())
-                return transcript_data['results']['transcripts'][0]['transcript']
+                transcript_data = json.loads(obj["Body"].read().decode())
+                return str(transcript_data["results"]["transcripts"][0]["transcript"])
 
-            if status == 'FAILED':
-                reason = job.get('FailureReason', 'Unknown')
+            if status == "FAILED":
+                reason = job.get("FailureReason", "Unknown")
                 raise RuntimeError(f"Transcription job failed: {reason}")
 
-    def transcribe(self):
+    def transcribe(self) -> str:
         """Start a transcription job and block until the transcript is returned.
 
         Returns:

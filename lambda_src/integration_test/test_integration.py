@@ -9,10 +9,11 @@ Run against a live AWS environment only — not in CI without credentials.
 """
 
 import os
-import requests
-from requests_aws4auth import AWS4Auth
 import subprocess
+
 import boto3
+import requests
+
 
 def get_lambda_function_url(function_name: str) -> str:
     """Retrieve the deployed endpoint URL using the AWS CLI.
@@ -50,14 +51,16 @@ def get_lambda_function_url(function_name: str) -> str:
 
     return endpoint_url
 
+
 def send_response(
-        response_url: str,
-        user: str, 
-        message: str, 
-        role: str, 
-        clear: str, 
-        evaluate: bool, 
-        access_token: str) -> dict:
+    response_url: str,
+    user: str,
+    message: str,
+    role: str,
+    clear: str | None,
+    evaluate: bool | None,
+    access_token: str,
+) -> dict:
     """Send a transcript message to the deployed response endpoint.
 
     Args:
@@ -93,33 +96,35 @@ def send_response(
     res = requests.post(response_url, json=body, headers=headers)
     if not res.ok:
         raise RuntimeError(f"Failed to send transcript: {res.status_code} {res.text}")
-    return res.json()
+    return dict(res.json())
 
-def test_response():
+
+def test_response() -> None:
     """Authenticate a test account and send a sample response message."""
     client = boto3.client("cognito-idp", region_name="eu-west-2")
-    
+
     response = client.initiate_auth(
-        ClientId=os.environ['AUTH0_CLIENT_ID'],
+        ClientId=os.environ["AUTH0_CLIENT_ID"],
         AuthFlow="USER_PASSWORD_AUTH",
         AuthParameters={
-            "USERNAME": os.environ['TEST_ACCOUNT'],
-            "PASSWORD": os.environ['TEST_PASSWORD'],
+            "USERNAME": os.environ["TEST_ACCOUNT"],
+            "PASSWORD": os.environ["TEST_PASSWORD"],
         },
     )
-    
-    AccessToken = response['AuthenticationResult']['AccessToken']
+
+    access_token = response["AuthenticationResult"]["AccessToken"]
     response = send_response(
-        response_url=f"{get_lambda_function_url("response")}/response",
+        response_url=f"{get_lambda_function_url('response')}/response",
         user="test",
         message="test message",
         role="user",
         clear=None,
         evaluate=None,
-        access_token=AccessToken
+        access_token=access_token,
     )
-    
-def test_speech_to_text():
+
+
+def test_speech_to_text() -> None:
     """Integration test: invoke the deployed speech_to_text Lambda and verify a 200 response.
 
     Signs the request with AWS SigV4 credentials read from the environment,
