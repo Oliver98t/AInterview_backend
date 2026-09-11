@@ -79,3 +79,6 @@ coverage.xml
 # Backup files
 *.bak
 *.backup
+
+.mypy_cache
+.ruff_cache

@@ -1,0 +1,32 @@
+default_install_hook_types: [pre-commit, pre-push]
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff lint
+        entry: .venv/bin/python -m ruff check lambda_src/response
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: ruff-format
+        name: Ruff format check
+        entry: .venv/bin/python -m ruff format lambda_src/response
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: mypy
+        name: Mypy type check
+        entry: .venv/bin/python -m mypy lambda_src/response
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      # - id: pytest
+      #   name: Pytest
+      #   entry: .venv/bin/python -m pytest
+      #   language: system
+      #   pass_filenames: false
+      #   stages: [pre-push]

@@ -4,7 +4,14 @@ Tests cover the Bedrock response generation helper as well as the Lambda
 handler for both SQS-triggered and direct URL-invocation paths.
 """
 
-from lambda_src.response.index import generate_response, handler, create_message_history, stringify_message_history, build_output_format
+from lambda_src.response.index import (
+    build_output_format,
+    create_message_history,
+    generate_response,
+    handler,
+    stringify_message_history,
+)
+
 
 def test_generate_response():
     """Test that generate_response returns a non-empty string for any prompt."""
@@ -12,6 +19,7 @@ def test_generate_response():
     generate_response_result = generate_response(prompt=prompt, user_name="test")
     # the model should always return a string regardless of prompt content
     assert type(generate_response_result.response) == str
+
 
 sqs_event_test_data = {
     "Records": [
@@ -65,7 +73,7 @@ url_call_event_test_data = {
         "x-forwarded-for": "REDACTED_IP",
         "x-forwarded-port": "443",
         "x-forwarded-proto": "https",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0"
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0",
     },
     "requestContext": {
         "accountId": "REDACTED_ACCOUNT_ID",
@@ -78,7 +86,7 @@ url_call_event_test_data = {
                 "cognitoIdentity": None,
                 "principalOrgId": None,
                 "userArn": "arn:aws:iam::REDACTED_ACCOUNT_ID:user/REDACTED_USER",
-                "userId": "REDACTED_USER_ID"
+                "userId": "REDACTED_USER_ID",
             }
         },
         "domainName": "REDACTED_DOMAIN",
@@ -88,17 +96,18 @@ url_call_event_test_data = {
             "path": "/response",
             "protocol": "HTTP/1.1",
             "sourceIp": "REDACTED_IP",
-            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0"
+            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36 Edg/150.0.0.0",
         },
         "requestId": "REDACTED_REQUEST_ID",
         "routeKey": "POST /response",
         "stage": "$default",
         "time": "REDACTED_TIME",
-        "timeEpoch": 1785262292704
+        "timeEpoch": 1785262292704,
     },
     "body": '{"user_name":"test","message":"null","role":"assistant","clear_db":"clear","eval":false}',
-    "isBase64Encoded": False
+    "isBase64Encoded": False,
 }
+
 
 def test_url_event_handler():
     """Test the handler when invoked via a Lambda function URL.
@@ -110,25 +119,75 @@ def test_url_event_handler():
     print(result)
     assert type(result) == dict
 
-test_item = {'response': 'alright', 'date': '2026-05-18T07:37:08.723244', 'job_id': '4ec72c78-d6fb-436d-a8c5-a271807a5721', 'user_name': 'test', 'type': 'answer', 'timestamp': '1779089828'}
+
+test_item = {
+    "response": "alright",
+    "date": "2026-05-18T07:37:08.723244",
+    "job_id": "4ec72c78-d6fb-436d-a8c5-a271807a5721",
+    "user_name": "test",
+    "type": "answer",
+    "timestamp": "1779089828",
+}
 
 test_list = []
 for _ in range(10):
     test_list.append(test_item)
-    
-history = { 'Items': test_list }
+
+history = {"Items": test_list}
+
 
 def test_create_message_history():
     message_history = create_message_history(history)
     print(message_history)
-    #assert True == False
+    # assert True == False
     assert type(message_history) == list
 
-test_message_history = [{'role': 'user', 'content': [{'text': 'begin the interview'}]}, {'role': 'assistant', 'content': [{'text': 'How would you optimize a Python script that processes a large CSV file without loading the entire file into memory?'}]}, {'role': 'user', 'content': [{'text': 'test'}]}, {'role': 'assistant', 'content': [{'text': 'How would you implement a context manager in Python to safely handle resource allocation and cleanup?'}]}, {'role': 'user', 'content': [{'text': 'test'}]}, {'role': 'assistant', 'content': [{'text': 'How would you use functools.lru_cache to memoize a function with mutable arguments?'}]}, {'role': 'user', 'content': [{'text': 'test'}]}, {'role': 'assistant', 'content': [{'text': 'How would you implement a custom exception class that automatically logs error details to a file?'}]}]
+
+test_message_history = [
+    {"role": "user", "content": [{"text": "begin the interview"}]},
+    {
+        "role": "assistant",
+        "content": [
+            {
+                "text": "How would you optimize a Python script that processes a large CSV file without loading the entire file into memory?"
+            }
+        ],
+    },
+    {"role": "user", "content": [{"text": "test"}]},
+    {
+        "role": "assistant",
+        "content": [
+            {
+                "text": "How would you implement a context manager in Python to safely handle resource allocation and cleanup?"
+            }
+        ],
+    },
+    {"role": "user", "content": [{"text": "test"}]},
+    {
+        "role": "assistant",
+        "content": [
+            {
+                "text": "How would you use functools.lru_cache to memoize a function with mutable arguments?"
+            }
+        ],
+    },
+    {"role": "user", "content": [{"text": "test"}]},
+    {
+        "role": "assistant",
+        "content": [
+            {
+                "text": "How would you implement a custom exception class that automatically logs error details to a file?"
+            }
+        ],
+    },
+]
+
+
 def test_stringify_message_history():
     output = stringify_message_history(test_message_history)
     print(output)
     assert str == type(output)
+
 
 def test_build_output_format():
     output = build_output_format(5)
