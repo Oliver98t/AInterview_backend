@@ -39,6 +39,18 @@ runs:
               python -m pip install --upgrade pip
               pip install -r lambda_src/dev_env_requirements.txt
 
+        - name: Ruff lint
+          shell: bash
+          run: ruff check lambda_src/
+
+        - name: Ruff format
+          shell: bash
+          run: ruff format lambda_src/
+
+        - name: Mypy type checking
+          shell: bash
+          run: mypy lambda_src/
+
         - name: Run unit tests
           shell: bash
           run: pytest --ignore=lambda_src/integration_test/
