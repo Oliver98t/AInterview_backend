@@ -9,6 +9,7 @@ import os
 import time
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -45,12 +46,12 @@ ddb_resource: DynamoDBServiceResource = boto3.resource(
 )
 LLM = "global.amazon.nova-2-lite-v1:0"
 LOCAL_TEST = os.environ.get("LOCAL_TEST", None)
-TABLENAME = os.environ.get("TABLE_NAME")
+TABLENAME: str = os.environ.get("TABLE_NAME", "")
 
 CHAT_WINDOW = 10
 
 
-def handler(event, context):
+def handler(event: dict, context: object) -> Any:
     """Lambda entry point. Routes to the correct handler based on the event source.
 
     Args:
@@ -64,6 +65,7 @@ def handler(event, context):
     logger.info(f"LOCAL_TEST: {LOCAL_TEST}")
     logger.info(f"Event: {event}")
 
+    data: Any = None
     # Route to the appropriate handler based on the event source
     if event.get("Records"):
         logger.info("SQS trigger")
@@ -75,7 +77,7 @@ def handler(event, context):
     return data
 
 
-def sqs_event(event):
+def sqs_event(event: dict) -> str:
     """Handle an SQS-triggered invocation.
 
     Parses the SQS message body, generates a Bedrock response for the
@@ -91,25 +93,25 @@ def sqs_event(event):
     message = event["Records"][0]["body"]
     data: dict = json.loads(message)
     # extract fields from the SQS message payload
-    job_id = data.get("jobId")
-    user_name = data.get("user_name")
-    transcript = data.get("transcription")
+    job_id = str(data.get("jobId"))
+    user_name = str(data.get("user_name"))
+    transcript = str(data.get("transcription"))
     # generate an AI response for the transcript
-    response = generate_response(prompt=transcript, user_name=user_name, clear_db=False)
+    generate_response_result = generate_response(prompt=transcript, user_name=user_name)
 
-    # write event data to DDB table
-    result = write_to_db(
-        {
-            "user": user_name,
-            "transcript": transcript,
-            "response": response,
-            "job_id": job_id,
-        }
+    db_record = DbRecord(
+        user_name=user_name,
+        response=generate_response_result.response,
+        job_id=job_id,
+        role="assistant",
+        session_id=job_id,
     )
+    # write event data to DDB table
+    result = write_to_db(db_record)
     return result
 
 
-def url_event(event) -> dict:
+def url_event(event: dict) -> dict:
     """Handle a direct HTTP invocation via Lambda function URL or API Gateway.
 
     Reads 'user' and 'transcript' from the query string, generates a Bedrock
@@ -123,7 +125,7 @@ def url_event(event) -> dict:
     """
     # Handle a direct HTTP invocation via URL function URL or API Gateway
     try:
-        query_parameters: dict = json.loads(event.get("body"))
+        query_parameters: dict = json.loads(str(event.get("body")))
         job_id = str(uuid.uuid4())
 
         # health status of lambda
@@ -132,10 +134,10 @@ def url_event(event) -> dict:
         if function_status:
             return {"statusCode": 200, "body": json.dumps({"status": "true"})}
 
-        user_name = query_parameters.get("user_name")
+        user_name = str(query_parameters.get("user_name"))
         message = query_parameters.get("message")
-        role = query_parameters.get("role")
-        session_id = query_parameters.get("session_id")
+        role = str(query_parameters.get("role"))
+        session_id = str(query_parameters.get("session_id"))
         clear_db = query_parameters.get("clear_db")
         eval = bool(query_parameters.get("eval"))
         logger.info(f"eval: {eval}")
@@ -144,7 +146,7 @@ def url_event(event) -> dict:
         response = None
         if role == "assistant":
             generate_response_result = generate_response(
-                prompt=message,
+                prompt=str(message),
                 user_name=user_name,
             )
             response = generate_response_result.response
@@ -159,7 +161,7 @@ def url_event(event) -> dict:
         if clear_db != "clear":
             db_record = DbRecord(
                 user_name=user_name,
-                response=response,
+                response=str(response),
                 job_id=job_id,
                 role=role,
                 session_id=session_id,
@@ -179,8 +181,8 @@ def url_event(event) -> dict:
     return {"statusCode": status_code, "body": body}
 
 
-def read_db_by_user(user_name: str):
-    response = None
+def read_db_by_user(user_name: str) -> dict:
+    response: Any = None
     try:
         table = ddb_resource.Table(TABLENAME)
         # Use query instead of scan, assuming user_name is the partition key and timestamp is the sort key
@@ -193,10 +195,10 @@ def read_db_by_user(user_name: str):
         logger.error(f"Exception: {e}")
         response = {"Items": []}
 
-    return response
+    return dict(response)
 
 
-def clear_db_by_user(user_name: str):
+def clear_db_by_user(user_name: str) -> None:
     try:
         table = ddb_resource.Table(TABLENAME)
         # Use query instead of scan, assuming user_name is the partition key and timestamp is the sort key
@@ -216,7 +218,7 @@ def clear_db_by_user(user_name: str):
         logger.error(f"Exception: {e}")
 
 
-def write_to_db(data: DbRecord):
+def write_to_db(data: DbRecord) -> str:
     """Persist the response data to DynamoDB.
 
     Args:
@@ -245,7 +247,7 @@ def write_to_db(data: DbRecord):
 
 
 def create_message_history(history: dict) -> list:
-    items = history.get("Items")
+    items = history.get("Items", [])
     # DynamoDB returns newest-first; reverse to chronological order for the model
     items = list(reversed(items))
     message_history = []
@@ -321,7 +323,7 @@ def build_output_format(question_num: int) -> str:
     return question_format
 
 
-def evaluate_repsonses(user_name: str):
+def evaluate_repsonses(user_name: str) -> str:
     # Bedrock currently only supports the client API in boto3, not resource API.
     bedrock: BedrockRuntimeClient = boto3.client(
         "bedrock-runtime", region_name="eu-west-2"

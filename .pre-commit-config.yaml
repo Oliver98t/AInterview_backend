@@ -22,11 +22,11 @@ repos:
         entry: .venv/bin/python -m mypy lambda_src/response
         language: system
         pass_filenames: false
-        stages: [pre-push]
+        stages: [pre-commit]
 
-      # - id: pytest
-      #   name: Pytest
-      #   entry: .venv/bin/python -m pytest
-      #   language: system
-      #   pass_filenames: false
-      #   stages: [pre-push]
+      - id: pytest
+        name: Pytest
+        entry: .venv/bin/python -m pytest --ignore=lambda_src/integration_test/
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

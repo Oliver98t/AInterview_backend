@@ -13,7 +13,7 @@ from lambda_src.response.index import (
 )
 
 
-def test_generate_response():
+def test_generate_response() -> None:
     """Test that generate_response returns a non-empty string for any prompt."""
     prompt: str = "this is a test prompt"
     generate_response_result = generate_response(prompt=prompt, user_name="test")
@@ -109,7 +109,7 @@ url_call_event_test_data = {
 }
 
 
-def test_url_event_handler():
+def test_url_event_handler() -> None:
     """Test the handler when invoked via a Lambda function URL.
 
     The handler should return a dict with a 'statusCode' and 'body' key
@@ -136,7 +136,7 @@ for _ in range(10):
 history = {"Items": test_list}
 
 
-def test_create_message_history():
+def test_create_message_history() -> None:
     message_history = create_message_history(history)
     print(message_history)
     # assert True == False
@@ -183,12 +183,12 @@ test_message_history = [
 ]
 
 
-def test_stringify_message_history():
+def test_stringify_message_history() -> None:
     output = stringify_message_history(test_message_history)
     print(output)
     assert str == type(output)
 
 
-def test_build_output_format():
+def test_build_output_format() -> None:
     output = build_output_format(5)
     print(output)
