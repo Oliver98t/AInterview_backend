@@ -50,7 +50,7 @@ jobs:
                   pip install -r lambda_src/dev_env_requirements.txt
 
             - name: Integration test
-              run: pytest lambda_src/integration_test/
+              run: pytest integration_test/
 
     Deploy-Prod:
         needs: Integration-Test

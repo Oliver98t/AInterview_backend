@@ -26,7 +26,7 @@ repos:
 
       - id: pytest
         name: Pytest
-        entry: .venv/bin/python -m pytest --ignore=lambda_src/integration_test/
+        entry: .venv/bin/python -m pytest --ignore=integration_test/
         language: system
         pass_filenames: false
         stages: [pre-push]

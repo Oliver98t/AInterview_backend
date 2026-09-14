@@ -55,7 +55,7 @@ runs:
 
         - name: Run unit tests
           shell: bash
-          run: pytest --ignore=lambda_src/integration_test/
+          run: pytest --ignore=integration_test/
 
         - name: Set up Terraform
           uses: hashicorp/setup-terraform@v3
