@@ -32,6 +32,8 @@ runs:
           uses: actions/setup-python@v5
           with:
               python-version: ${{ inputs.python-version }}
+              cache: pip
+              cache-dependency-path: lambda_src/dev_env_requirements.txt
 
         - name: Install dependencies
           shell: bash

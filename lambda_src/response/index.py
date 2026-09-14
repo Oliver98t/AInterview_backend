@@ -44,9 +44,9 @@ logger.setLevel(logging.INFO)
 ddb_resource: DynamoDBServiceResource = boto3.resource(
     "dynamodb", region_name="eu-west-2"
 )
-LLM = "global.amazon.nova-2-lite-v1:0"
+LLM = "global.amazon.nova-2-lite-v1:0"  # TODO move to infrastructure
 LOCAL_TEST = os.environ.get("LOCAL_TEST", None)
-TABLENAME: str = os.environ.get("TABLE_NAME", "")
+TABLE_NAME: str = os.environ.get("TABLE_NAME", "")
 
 CHAT_WINDOW = 10
 
@@ -184,7 +184,7 @@ def url_event(event: dict) -> dict:
 def read_db_by_user(user_name: str) -> dict:
     response: Any = None
     try:
-        table = ddb_resource.Table(TABLENAME)
+        table = ddb_resource.Table(TABLE_NAME)
         # Use query instead of scan, assuming user_name is the partition key and timestamp is the sort key
         response = table.query(
             KeyConditionExpression=Key("user_name").eq(user_name),
@@ -200,7 +200,7 @@ def read_db_by_user(user_name: str) -> dict:
 
 def clear_db_by_user(user_name: str) -> None:
     try:
-        table = ddb_resource.Table(TABLENAME)
+        table = ddb_resource.Table(TABLE_NAME)
         # Use query instead of scan, assuming user_name is the partition key and timestamp is the sort key
         response = table.query(
             KeyConditionExpression=Key("user_name").eq(user_name),
@@ -231,7 +231,7 @@ def write_to_db(data: DbRecord) -> str:
     # only write to DynamoDB when running in a live environment (not local tests)
     if LOCAL_TEST != None:
         logger.info("writing to dynamodb")
-        table = ddb_resource.Table(TABLENAME)
+        table = ddb_resource.Table(TABLE_NAME)
         table.put_item(
             Item={
                 "user_name": str(data.user_name),
